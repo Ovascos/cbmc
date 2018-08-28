@@ -16,6 +16,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <util/arith_tools.h>
 #include <util/base_type.h>
+#include <util/byte_operators.h>
 #include <util/c_types.h>
 #include <util/pointer_offset_size.h>
 #include <util/simplify_expr.h>
@@ -1203,9 +1204,9 @@ void value_sett::assign(
                 "type:\n"+type.pretty();
 
         rhs_member=make_member(rhs, name, ns);
-
-        assign(lhs_member, rhs_member, ns, is_simplified, add_to_sets);
       }
+
+      assign(lhs_member, rhs_member, ns, false, add_to_sets);
     }
   }
   else if(type.id()==ID_array)
@@ -1756,7 +1757,7 @@ exprt value_sett::make_member(
   }
 
   // give up
-  typet subtype=struct_union_type.component_type(component_name);
+  const typet subtype = struct_union_type.component_type(component_name);
   member_exprt member_expr(src, component_name, subtype);
 
   return member_expr;
