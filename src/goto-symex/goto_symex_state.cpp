@@ -788,12 +788,62 @@ void goto_symex_statet::rename_address(
   }
 }
 
+static bool needs_renaming(
+  const typet &type,
+  const namespacet &ns)
+{
+  if(type.id()==ID_array)
+  {
+    const auto &array_type=to_array_type(type);
+    return needs_renaming(array_type.subtype(), ns) ||
+           !array_type.size().is_constant();
+  }
+  else if(type.id()==ID_struct ||
+          type.id()==ID_union)
+  {
+    const auto &s_u_type=to_struct_union_type(type);
+    const auto &components=s_u_type.components();
+
+    for(const auto &c : components)
+      // be careful, or it might get cyclic
+      if(c.type().id() != ID_pointer &&
+         needs_renaming(c.type(), ns))
+        return true;
+
+    return false;
+  }
+  else if(type.id()==ID_pointer)
+  {
+    return needs_renaming(type.subtype(), ns);
+  }
+  else if(type.id() == ID_symbol_type)
+  {
+    const symbolt &symbol = ns.lookup(to_symbol_type(type));
+    return needs_renaming(symbol.type, ns);
+  }
+  else if(type.id() == ID_union_tag)
+  {
+    const symbolt &symbol = ns.lookup(to_union_tag_type(type));
+    return needs_renaming(symbol.type, ns);
+  }
+  else if(type.id() == ID_struct_tag)
+  {
+    const symbolt &symbol = ns.lookup(to_struct_tag_type(type));
+    return needs_renaming(symbol.type, ns);
+  }
+  else
+    return false;
+}
+
 void goto_symex_statet::rename(
   typet &type,
   const irep_idt &l1_identifier,
   const namespacet &ns,
   levelt level)
 {
+  if(!needs_renaming(type, ns))
+    return;
+
   // rename all the symbols with their last known value
   // to the given level
 
