@@ -73,6 +73,13 @@ bool is_constant_or_has_constant_components(
             return true;
         }
       }
+      else if(subtype.id() == ID_symbol_type ||
+              subtype.id() == ID_struct_tag ||
+              subtype.id() == ID_union_tag)
+      {
+        const auto &resolved_type = ns.follow(subtype);
+        return is_constant_or_has_constant_components(resolved_type, ns);
+      }
       return false;
     };
 
@@ -99,7 +106,9 @@ bool is_constant_or_has_constant_components(
   // we have to use the namespace to resolve to its definition:
   // struct t { const int a; };
   // struct t t1;
-  if(type.id() == ID_symbol_type)
+  if(type.id() == ID_symbol_type ||
+     type.id() == ID_struct_tag ||
+     type.id() == ID_union_tag)
   {
     const auto &resolved_type = ns.follow(type);
     return has_constant_components(resolved_type);
