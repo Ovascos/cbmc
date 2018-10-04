@@ -745,6 +745,36 @@ void goto_convertt::do_function_call_symbol(
       throw 0;
     }
   }
+  else if(identifier==CPROVER_PREFIX "input" ||
+          identifier==CPROVER_PREFIX "output")
+  {
+    if(arguments.size()!=1)
+    {
+      error().source_location=function.find_source_location();
+      error() << "`" << identifier << "' expected to have one arguments"
+              << eom;
+      throw 0;
+    }
+
+    bool is_input=
+      identifier==CPROVER_PREFIX "input";
+
+    goto_programt::targett t=dest.add_instruction(is_input ? INPUT : OUTPUT);
+    t->guard=arguments[0];
+    t->source_location=function.source_location();
+    //t->source_location.set_property_class(ID_assertion);
+
+    // ToDo check type, maybe symbol only instead of expr
+    //if(t->guard.type().id()!=ID_bool)
+    //  t->guard.make_typecast(bool_typet());
+
+    if(lhs.is_not_nil())
+    {
+      error().source_location=function.find_source_location();
+      error() << identifier << " expected not to have LHS" << eom;
+      throw 0;
+    }
+  }
   else if(identifier==CPROVER_PREFIX "assert" ||
           identifier==CPROVER_PREFIX "precondition")
   {

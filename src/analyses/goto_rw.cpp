@@ -722,6 +722,12 @@ void goto_rw(goto_programt::const_targett target,
     UNREACHABLE;
     break;
 
+  case INPUT:
+  case OUTPUT:
+    // ToDo no idea what to do here
+    UNREACHABLE;
+    break;
+
   case GOTO:
   case ASSUME:
   case ASSERT:

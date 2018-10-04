@@ -413,6 +413,8 @@ void cfg_baset<T, P, I>::compute_edges(
   case ATOMIC_END:
   case DECL:
   case DEAD:
+  case INPUT:
+  case OUTPUT:
     if(next_PC!=goto_program.instructions.end())
       this->add_edge(entry, entry_map[next_PC]);
     break;

@@ -235,6 +235,11 @@ goto_programt::const_targett goto_program2codet::convert_instruction(
     case CATCH:
       return convert_catch(target, upper_bound, dest);
 
+    case INPUT:
+    case OUTPUT:
+      // ToDo not implemented
+      UNREACHABLE;
+
     case NO_INSTRUCTION_TYPE:
     case INCOMPLETE_GOTO:
       UNREACHABLE;

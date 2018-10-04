@@ -47,7 +47,9 @@ enum goto_program_instruction_typet
   FUNCTION_CALL = 16,  // call a function
   THROW = 17,          // throw an exception
   CATCH = 18,          // push, pop or enter an exception handler
-  INCOMPLETE_GOTO = 19 // goto where target is yet to be determined
+  INCOMPLETE_GOTO = 19,// goto where target is yet to be determined
+  INPUT = 20,          // input for mutation testing
+  OUTPUT = 21          // output for mutation testing
 };
 
 std::ostream &operator<<(std::ostream &, goto_program_instruction_typet);
@@ -318,6 +320,8 @@ public:
     bool is_start_thread () const { return type==START_THREAD;  }
     bool is_end_thread   () const { return type==END_THREAD;    }
     bool is_end_function () const { return type==END_FUNCTION;  }
+    bool is_input        () const { return type==INPUT;         }
+    bool is_output       () const { return type==OUTPUT;        }
     bool is_incomplete_goto() const
     {
       return type == INCOMPLETE_GOTO;

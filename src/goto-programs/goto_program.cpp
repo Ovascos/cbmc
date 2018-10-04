@@ -98,6 +98,16 @@ std::ostream &goto_programt::output_instruction(
     out << from_expr(ns, identifier, instruction.code) << '\n';
     break;
 
+  case INPUT:
+  case OUTPUT:
+    if(instruction.is_input())
+      out << "INPUT ";
+    else
+      out << "OUTPUT ";
+
+    out << from_expr(ns, identifier, instruction.guard) << '\n';
+    break;
+
   case ASSUME:
   case ASSERT:
     if(instruction.is_assume())
