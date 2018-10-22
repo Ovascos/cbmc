@@ -745,28 +745,34 @@ void goto_convertt::do_function_call_symbol(
       throw 0;
     }
   }
-  else if(identifier==CPROVER_PREFIX "input" ||
-          identifier==CPROVER_PREFIX "output")
+  else if(identifier==CPROVER_PREFIX "mut_input" ||
+          identifier==CPROVER_PREFIX "mut_output")
   {
     if(arguments.size()!=1)
     {
       error().source_location=function.find_source_location();
-      error() << "`" << identifier << "' expected to have one arguments"
+      error() << "`" << identifier << "' expected to have one argument"
+              << eom;
+      throw 0;
+    }
+
+    const exprt &arg=arguments[0];
+    if(arg.id()!=ID_symbol || arg.has_operands())
+    {
+      error().source_location=function.find_source_location();
+      error() << "`" << identifier << "' expected a variable symbol argument"
               << eom;
       throw 0;
     }
 
     bool is_input=
-      identifier==CPROVER_PREFIX "input";
+      identifier==CPROVER_PREFIX "mut_input";
 
-    goto_programt::targett t=dest.add_instruction(is_input ? INPUT : OUTPUT);
+    goto_programt::targett t=dest.add_instruction(is_input ? MUT_INPUT : MUT_OUTPUT);
+    // ToDo: guard might be wrong here
     t->guard=arguments[0];
     t->source_location=function.source_location();
     //t->source_location.set_property_class(ID_assertion);
-
-    // ToDo check type, maybe symbol only instead of expr
-    //if(t->guard.type().id()!=ID_bool)
-    //  t->guard.make_typecast(bool_typet());
 
     if(lhs.is_not_nil())
     {

@@ -464,10 +464,13 @@ goto_programt::targett string_abstractiont::abstract(
   case GOTO:
   case ASSERT:
   case ASSUME:
-  case INPUT:
-  case OUTPUT:
     if(has_string_macros(it->guard))
       replace_string_macros(it->guard, false, it->source_location);
+    break;
+
+  case MUT_INPUT:
+  case MUT_OUTPUT:
+    assert(!has_string_macros(it->guard));
     break;
 
   case FUNCTION_CALL:

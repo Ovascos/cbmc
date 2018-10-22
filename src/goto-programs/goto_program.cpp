@@ -98,12 +98,12 @@ std::ostream &goto_programt::output_instruction(
     out << from_expr(ns, identifier, instruction.code) << '\n';
     break;
 
-  case INPUT:
-  case OUTPUT:
-    if(instruction.is_input())
-      out << "INPUT ";
+  case MUT_INPUT:
+  case MUT_OUTPUT:
+    if(instruction.is_mut_input())
+      out << "MUT_INPUT ";
     else
-      out << "OUTPUT ";
+      out << "MUT_OUTPUT ";
 
     out << from_expr(ns, identifier, instruction.guard) << '\n';
     break;

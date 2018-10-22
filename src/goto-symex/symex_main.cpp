@@ -460,14 +460,14 @@ void goto_symext::symex_step(
     symex_transition(state);
     break;
 
-  case NO_INSTRUCTION_TYPE:
-    throw "symex got NO_INSTRUCTION";
-
-  case INPUT:
-  case OUTPUT:
+  case MUT_INPUT:
+  case MUT_OUTPUT:
     // ToDo implement this
     symex_transition(state);
     break;
+
+  case NO_INSTRUCTION_TYPE:
+    throw "symex got NO_INSTRUCTION";
 
   default:
     throw "symex got unexpected instruction";
