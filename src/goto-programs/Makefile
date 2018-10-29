@@ -54,6 +54,7 @@ SRC = adjust_float_expressions.cpp \
       replace_calls.cpp \
       resolve_inherited_component.cpp \
       safety_checker.cpp \
+      mutation_checker.cpp \
       set_properties.cpp \
       show_goto_functions.cpp \
       show_goto_functions_json.cpp \

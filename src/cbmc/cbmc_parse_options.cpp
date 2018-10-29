@@ -134,6 +134,14 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
     exit(CPROVER_EXIT_USAGE_ERROR);
   }
 
+  if((cmdline.isset("list-locations") || cmdline.isset("mutate")) &&
+      !cmdline.isset("mutator"))
+  {
+    error() << "--list-locations and --mutate require --mutator to be given"
+            << eom;
+    exit(CPROVER_EXIT_USAGE_ERROR);
+  }
+
   if(cmdline.isset("full-slice"))
     options.set_option("full-slice", true);
 
@@ -303,6 +311,11 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
     if(cmdline.isset("string-max-length"))
       options.set_option(
         "string-max-length", cmdline.get_value("string-max-length"));
+  }
+
+  if(cmdline.isset("mutator"))
+  {
+    options.set_option("mutator", cmdline.get_value("mutator"));
   }
 
   if(cmdline.isset("max-node-refinement"))
@@ -949,6 +962,9 @@ void cbmc_parse_optionst::help()
     "\n"
     "BMC options:\n"
     HELP_BMC
+    "\n"
+    "Mutation checking options:\n"
+    HELP_MBMC
     "\n"
     "Backend options:\n"
     " --object-bits n              number of bits used for object addresses\n"

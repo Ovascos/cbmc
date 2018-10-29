@@ -23,6 +23,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <goto-programs/goto_trace.h>
 
 #include "bmc.h"
+#include "mbmc.h"
 #include "xml_interface.h"
 #include "cbmc_solvers.h"
 
@@ -33,6 +34,7 @@ class optionst;
 // clang-format off
 #define CBMC_OPTIONS \
   OPT_BMC \
+  OPT_MBMC \
   "(preprocess)(slice-by-trace):" \
   OPT_FUNCTIONS \
   "(no-simplify)(full-slice)" \
