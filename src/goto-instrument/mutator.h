@@ -13,12 +13,12 @@
 
 struct mutation_locationt
 {
-  mutation_locationt(goto_programt::instructiont &_inst, exprt &_expr)
-    : inst(&_inst),
+  mutation_locationt(goto_programt::instructiont &_instr, exprt &_expr)
+    : instr(&_instr),
       expr(&_expr)
   {}
 
-  goto_programt::instructiont *const inst;
+  goto_programt::instructiont *const instr;
   exprt                       *const expr;
 };
 

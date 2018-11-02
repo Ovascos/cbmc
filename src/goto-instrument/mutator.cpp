@@ -10,13 +10,22 @@
 void mutatort::show_location_ids(
   ui_message_handlert::uit ui)
 {
-#if 0
-  std::cout << "Loop "
-            << instr->function << "." << mut_id << ":" << "\n";
+  INVARIANT(ui == ui_message_handlert::uit::PLAIN,
+      "other ui modes not supported yet");
 
-  std::cout << "  " << it->source_location << "\n";
-  std::cout << "\n";
-#endif
+  unsigned int cnt = 0;
+
+  switch(ui)
+  {
+  case ui_message_handlert::uit::PLAIN:
+    for(mutation_locationt loc : mutation_locations)
+    {
+      std::cout << cnt++ << ": " <<  loc.instr->source_location << "\n";
+    }
+    break;
+  default:
+    break;
+  }
 }
 
 struct mutatort::expr_mutation_visotort : expr_visitort
