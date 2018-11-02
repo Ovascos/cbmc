@@ -22,6 +22,7 @@ struct mutation_locationt
   exprt                       *const expr;
 };
 
+
 class mutatort
 {
 public:
@@ -37,6 +38,8 @@ public:
   void show_location_ids(ui_message_handlert::uit);
 
 protected:
+  struct expr_mutation_visotort;
+
   const mutationt& mutation;
   std::vector<mutation_locationt> mutation_locations;
 

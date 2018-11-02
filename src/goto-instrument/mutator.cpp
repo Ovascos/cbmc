@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-#include <goto-programs/goto_program.h>
-
+#include <util/expr.h>
 #include <util/std_code.h>
-#include <util/irep_ids.h>
+
+#include <goto-programs/goto_program.h>
 
 void mutatort::show_location_ids(
   ui_message_handlert::uit ui)
@@ -19,13 +19,29 @@ void mutatort::show_location_ids(
 #endif
 }
 
+struct mutatort::expr_mutation_visotort : expr_visitort
+{
+  expr_mutation_visotort(
+    mutatort &_mutator,
+    goto_programt::instructiont &_instr)
+    : mutator(_mutator),
+      instr(_instr)
+  {}
+
+  mutatort &mutator;
+  goto_programt::instructiont &instr;
+
+  void operator()(exprt &ex) override
+  {
+    if(mutator.mutation.check_expr(ex))
+      mutator.mutation_locations.emplace_back(instr, ex);
+  }
+};
+
 void mutatort::match(goto_programt::instructiont &instr, exprt &ex)
 {
-  // ToDo use visit function
-  if(!mutation.check_pattern(ex))
-    return;
-
-  mutation_locations.emplace_back(instr, ex);
+  expr_mutation_visotort visit(*this, instr);
+  ex.visit(visit);
 }
 
 // ToDo: check https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html

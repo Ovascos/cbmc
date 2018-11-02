@@ -2,7 +2,12 @@
 
 struct mutation_less_uniqualt : public mutationt
 {
-  bool check_pattern(const exprt& ex) const override 
+  bool mutate_expr(exprt& ex) const override
+  {
+    return true;
+  }
+
+  bool check_expr(const exprt& ex) const override 
   { 
     return true;
   }
@@ -10,7 +15,12 @@ struct mutation_less_uniqualt : public mutationt
 
 struct mutation_plust : public mutationt
 {
-  bool check_pattern(const exprt& ex) const override 
+  bool mutate_expr(exprt& ex) const override
+  {
+    return true;
+  }
+
+  bool check_expr(const exprt& ex) const override 
   { 
     return true;
   }

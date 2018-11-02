@@ -12,7 +12,9 @@ enum mutation_typet
 
 struct mutationt
 {
-  virtual bool check_pattern(const exprt& ex) const = 0;
+  virtual bool check_expr(const exprt& ex) const = 0;
+  virtual bool mutate_expr(exprt& ex) const = 0;
+
   static std::unique_ptr<mutationt> factory(mutation_typet type);
 };
 
