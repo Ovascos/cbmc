@@ -42,6 +42,8 @@ OBJ += ../ansi-c/ansi-c$(LIBEXT) \
       ../goto-instrument/nondet_static$(OBJEXT) \
       ../goto-instrument/full_slicer$(OBJEXT) \
       ../goto-instrument/unwindset$(OBJEXT) \
+      ../goto-instrument/mutator$(OBJEXT) \
+      ../goto-instrument/mutation$(OBJEXT) \
       ../analyses/analyses$(LIBEXT) \
       ../langapi/langapi$(LIBEXT) \
       ../xmllang/xmllang$(LIBEXT) \

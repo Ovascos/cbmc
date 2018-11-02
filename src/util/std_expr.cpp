@@ -23,6 +23,15 @@ bool constant_exprt::value_is_zero_string() const
   return val.find_first_not_of('0')==std::string::npos;
 }
 
+bool constant_exprt::value_is_one_string() const
+{
+  const std::string val=id2string(get_value());
+  size_t pos=val.find_first_not_of('0');
+  return pos!=std::string::npos &&
+         val[pos]=='1' &&
+         pos==val.length()-1;
+}
+
 exprt disjunction(const exprt::operandst &op)
 {
   if(op.empty())

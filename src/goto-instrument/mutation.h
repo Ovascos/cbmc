@@ -14,6 +14,7 @@ struct mutationt
 {
   virtual bool check_expr(const exprt& ex) const = 0;
   virtual bool mutate_expr(exprt& ex) const = 0;
+  virtual ~mutationt() {}
 
   static std::unique_ptr<mutationt> factory(mutation_typet type);
 };

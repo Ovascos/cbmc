@@ -42,7 +42,7 @@ struct mutatort::expr_mutation_visotort : expr_visitort
 
   void operator()(exprt &ex) override
   {
-    if(mutator.mutation.check_expr(ex))
+    if(mutator.mutation->check_expr(ex))
       mutator.mutation_locations.emplace_back(instr, ex);
   }
 };
@@ -66,12 +66,12 @@ void mutatort::analyze(goto_functionst &goto_functions)
     analyze(it->second.body);
 }
 
+// ToDo check with all true mutation (somehow there'r non-file location instructions
+
 void mutatort::analyze(goto_programt &goto_program)
 {
-  mutation_locations.clear();
-
   Forall_goto_program_instructions(it, goto_program) {
-    if(it->source_location.is_built_in())
+    if(it->source_location.is_built_in() || it->source_location.get_hide())
       continue;
 
     switch(it->type) {

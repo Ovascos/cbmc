@@ -9,7 +9,7 @@
 #include <goto-programs/goto_model.h>
 #include <goto-symex/path_storage.h>
 
-class mutatort;
+#include <goto-instrument/mutator.h>
 
 // ToDo: separate bmct into bmct and checkert
 class mbmct : public bmct
@@ -40,9 +40,9 @@ public:
     const path_strategy_choosert &path_strategy_chooser, // not used
     const optionst &opts,
     abstract_goto_modelt &model,
+    mutatort &mutator,
     const ui_message_handlert::uit &ui,
-    messaget &message,
-    mutatort &mutator);
+    messaget &message);
 
 protected:
   mutatort &mutator;

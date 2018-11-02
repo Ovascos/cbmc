@@ -28,9 +28,9 @@ int mbmct::do_mbmc(
   const path_strategy_choosert &path_strategy_chooser, // not used
   const optionst &opts,
   abstract_goto_modelt &model,
+  mutatort &mutator,
   const ui_message_handlert::uit &ui,
-  messaget &message,
-  mutatort &mutator)
+  messaget &message)
 {
   safety_checkert::resultt final_result = safety_checkert::resultt::UNKNOWN;
 

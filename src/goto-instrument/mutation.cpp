@@ -1,6 +1,13 @@
 #include "mutation.h"
+#include <util/std_expr.h>
 
-struct mutation_less_uniqualt : public mutationt
+static inline bool has_n_op(const exprt &ex, unsigned int n) {
+  return ex.operands().size() == n;
+}
+
+#define CHECK(x) do { if(!(x)) return false; } while(0)
+
+struct mutation_plust : public mutationt
 {
   bool mutate_expr(exprt& ex) const override
   {
@@ -8,16 +15,25 @@ struct mutation_less_uniqualt : public mutationt
   }
 
   bool check_expr(const exprt& ex) const override 
-  { 
+  {
+    CHECK(ex.id() == ID_plus);
+    CHECK(has_n_op(ex, 2));
+
+    const exprt& op = 
+      (ex.op1().id() == ID_typecast) ? ex.op1().op0() : ex.op1();
+    CHECK(op.is_constant());
+
+    const constant_exprt& c_ex = static_cast<const constant_exprt&>(op);
+    CHECK(c_ex.value_is_one_string());
     return true;
   }
 };
 
-struct mutation_plust : public mutationt
+struct mutation_less_uniqualt : public mutationt
 {
   bool mutate_expr(exprt& ex) const override
   {
-    return true;
+    return false;
   }
 
   bool check_expr(const exprt& ex) const override 

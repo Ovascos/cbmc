@@ -4,6 +4,7 @@
 #include "mutation.h"
 
 #include <vector>
+#include <memory>
 
 #include <goto-programs/goto_model.h>
 #include <goto-programs/goto_program.h>
@@ -26,8 +27,8 @@ struct mutation_locationt
 class mutatort
 {
 public:
-  mutatort(const mutationt &_mutation)
-    : mutation(_mutation)
+  mutatort(mutation_typet mtype)
+    : mutation(mutationt::factory(mtype))
   {
   }
 
@@ -40,7 +41,7 @@ public:
 protected:
   struct expr_mutation_visotort;
 
-  const mutationt& mutation;
+  const std::unique_ptr<mutationt> mutation;
   std::vector<mutation_locationt> mutation_locations;
 
   void match(goto_programt::instructiont &instr, exprt &ex);

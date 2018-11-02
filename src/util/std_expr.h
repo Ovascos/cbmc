@@ -4024,6 +4024,7 @@ public:
   }
 
   bool value_is_zero_string() const;
+  bool value_is_one_string() const;
 };
 
 

@@ -313,9 +313,13 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
         "string-max-length", cmdline.get_value("string-max-length"));
   }
 
-  if(cmdline.isset("mutator"))
+  if(cmdline.isset("list-mutators") || cmdline.isset("mutator"))
   {
-    options.set_option("mutator", cmdline.get_value("mutator"));
+    options.set_option("mutation_test", true);
+    if(cmdline.isset("mutator"))
+    {
+      options.set_option("mutator", cmdline.get_value("mutator"));
+    }
   }
 
   if(cmdline.isset("max-node-refinement"))
@@ -539,15 +543,38 @@ int cbmc_parse_optionst::doit()
     return CPROVER_EXIT_SUCCESS;
   }
 
-  if(set_properties())
-    return CPROVER_EXIT_SET_PROPERTIES_FAILED;
+  if(cmdline.isset("list-locations")) {
+    mutatort mutator(PLUS_ONE_REMOVE);
+    mutator.analyze(goto_model);
+    mutator.show_location_ids(ui_message_handler.get_ui());
+    return CPROVER_EXIT_SUCCESS;
+  }
 
-  return bmct::do_language_agnostic_bmc(
-    path_strategy_chooser,
-    options,
-    goto_model,
-    ui_message_handler.get_ui(),
-    *this);
+  if(cmdline.isset("mutate")) {
+    mutatort mutator(PLUS_ONE_REMOVE);
+
+    mutator.analyze(goto_model);
+
+    return mbmct::do_mbmc(
+      path_strategy_chooser,
+      options,
+      goto_model,
+      mutator,
+      ui_message_handler.get_ui(),
+      *this);
+  }
+  else
+  {
+    if(set_properties())
+      return CPROVER_EXIT_SET_PROPERTIES_FAILED;
+
+    return bmct::do_language_agnostic_bmc(
+      path_strategy_chooser,
+      options,
+      goto_model,
+      ui_message_handler.get_ui(),
+      *this);
+  }
 }
 
 bool cbmc_parse_optionst::set_properties()
