@@ -12,6 +12,7 @@
 
 enum mutation_typet
 {
+  NOOP,
   LESS_EQUAL_TO_UNEQUAL,
   PLUS_ONE_REMOVE
 };
@@ -43,13 +44,7 @@ public:
   ///
   /// Ensure that mutation_strategy_choosert::is_valid_strategy() returns true
   /// for a particular string before calling this function on that string.
-  std::unique_ptr<mutationt> get(const std::string strategy) const
-  {
-    auto found = strategies.find(strategy);
-    INVARIANT(
-      found != strategies.end(), "Unknown strategy '" + strategy + "'.");
-    return found->second.second();
-  }
+  std::unique_ptr<mutationt> get(const std::string strategy) const;
 
   /// \brief add options, suitable to be invoked from front-ends.
   void

@@ -36,7 +36,9 @@ public:
   void analyze(goto_functionst &);
   void analyze(goto_programt &);
 
-  void show_location_ids(ui_message_handlert::uit);
+  void show_location_ids(ui_message_handlert::uit) const;
+
+  void mutate(unsigned id);
 
 protected:
   struct expr_mutation_visotort;

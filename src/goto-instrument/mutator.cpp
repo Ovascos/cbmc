@@ -8,7 +8,7 @@
 #include <goto-programs/goto_program.h>
 
 void mutatort::show_location_ids(
-  ui_message_handlert::uit ui)
+  ui_message_handlert::uit ui) const
 {
   INVARIANT(ui == ui_message_handlert::uit::PLAIN,
       "other ui modes not supported yet");
@@ -24,8 +24,15 @@ void mutatort::show_location_ids(
     }
     break;
   default:
-    break;
+    UNREACHABLE;
   }
+}
+
+void mutatort::mutate(unsigned id)
+{
+  INVARIANT(id < mutation_locations.size(),
+      "invlid mutation id int mutate() call");
+  mutation->mutate_expr(*(mutation_locations[id].expr));
 }
 
 struct mutatort::expr_mutation_visotort : expr_visitort

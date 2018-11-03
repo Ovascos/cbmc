@@ -104,6 +104,7 @@ public:
 
   static int get_goto_program(
     goto_modelt &,
+    mutatort &,
     const optionst &,
     const cmdlinet &,
     messaget &,

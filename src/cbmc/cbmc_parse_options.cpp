@@ -134,14 +134,6 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
     exit(CPROVER_EXIT_USAGE_ERROR);
   }
 
-  if((cmdline.isset("list-locations") || cmdline.isset("mutate")) &&
-      !cmdline.isset("mutator"))
-  {
-    error() << "--list-locations and --mutate require --mutator to be given"
-            << eom;
-    exit(CPROVER_EXIT_USAGE_ERROR);
-  }
-
   if(cmdline.isset("show-mutators"))
   {
     std::cout << mutation_strategy_chooser.show_strategies();
@@ -528,34 +520,19 @@ int cbmc_parse_optionst::doit()
     return CPROVER_EXIT_SUCCESS;
   }
 
-  int get_goto_program_ret =
-    get_goto_program(goto_model, options, cmdline, *this, ui_message_handler);
+  mutatort mutator(mutation_strategy_chooser.get(
+      options.get_option("mutation-strategy")));
+
+  int get_goto_program_ret=get_goto_program(
+      goto_model, mutator, options, cmdline, *this, ui_message_handler);
 
   if(get_goto_program_ret!=-1)
     return get_goto_program_ret;
 
-  if(cmdline.isset("show-claims") || // will go away
-     cmdline.isset("show-properties")) // use this one
-  {
-    show_properties(
-      goto_model, get_message_handler(), ui_message_handler.get_ui());
-    return CPROVER_EXIT_SUCCESS;
-  }
+  if(set_properties())
+    return CPROVER_EXIT_SET_PROPERTIES_FAILED;
 
-  if(cmdline.isset("list-locations")) {
-    mutatort mutator(mutation_strategy_chooser.get(
-          options.get_option("mutation-strategy")));
-    mutator.analyze(goto_model);
-    mutator.show_location_ids(ui_message_handler.get_ui());
-    return CPROVER_EXIT_SUCCESS;
-  }
-
-  if(cmdline.isset("mutate")) {
-    mutatort mutator(mutation_strategy_chooser.get(
-          options.get_option("mutation-strategy")));
-
-    mutator.analyze(goto_model);
-
+  if(options.get_bool_option("mutate"))
     return mbmct::do_mbmc(
       path_strategy_chooser,
       options,
@@ -563,19 +540,13 @@ int cbmc_parse_optionst::doit()
       mutator,
       ui_message_handler.get_ui(),
       *this);
-  }
   else
-  {
-    if(set_properties())
-      return CPROVER_EXIT_SET_PROPERTIES_FAILED;
-
     return bmct::do_language_agnostic_bmc(
       path_strategy_chooser,
       options,
       goto_model,
       ui_message_handler.get_ui(),
       *this);
-  }
 }
 
 bool cbmc_parse_optionst::set_properties()
@@ -612,6 +583,7 @@ bool cbmc_parse_optionst::set_properties()
 
 int cbmc_parse_optionst::get_goto_program(
   goto_modelt &goto_model,
+  mutatort &mutator,
   const optionst &options,
   const cmdlinet &cmdline,
   messaget &log,
@@ -636,6 +608,8 @@ int cbmc_parse_optionst::get_goto_program(
     if(cbmc_parse_optionst::process_goto_program(goto_model, options, log))
       return CPROVER_EXIT_INTERNAL_ERROR;
 
+    mutator.analyze(goto_model);
+
     // show it?
     if(cmdline.isset("show-loops"))
     {
@@ -644,10 +618,19 @@ int cbmc_parse_optionst::get_goto_program(
     }
 
     // show it?
+    if(cmdline.isset("list-locations")) {
+      mutator.show_location_ids(ui_message_handler.get_ui());
+      return CPROVER_EXIT_SUCCESS;
+    }
+
+    // show it?
     if(
       cmdline.isset("show-goto-functions") ||
       cmdline.isset("list-goto-functions"))
     {
+      if(options.get_bool_option("mutate"))
+        mutator.mutate(options.get_unsigned_int_option("mutation-location"));
+
       show_goto_functions(
         goto_model,
         ui_message_handler,
@@ -657,6 +640,14 @@ int cbmc_parse_optionst::get_goto_program(
     }
 
     log.status() << config.object_bits_info() << log.eom;
+
+    if(cmdline.isset("show-claims") || // will go away
+       cmdline.isset("show-properties")) // use this one
+    {
+      show_properties(
+        goto_model, ui_message_handler, ui_message_handler.get_ui());
+      return CPROVER_EXIT_SUCCESS;
+    }
   }
 
   catch(const char *e)

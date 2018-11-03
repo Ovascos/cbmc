@@ -20,7 +20,6 @@ void mutation_strategy_choosert::set_mutation_strategy_options(
 {
   if(cmdline.isset("mutator"))
   {
-    options.set_option("mutation-test", true);
     std::string strategy = cmdline.get_value("mutator");
     if(!is_valid_strategy(strategy))
     {
@@ -32,8 +31,53 @@ void mutation_strategy_choosert::set_mutation_strategy_options(
     }
     options.set_option("mutation-strategy", strategy);
   }
-  else
-    options.set_option("mutation-test", false);
+  
+  if(cmdline.isset("list-locations"))
+  {
+    if(!cmdline.isset("mutator"))
+    {
+      message.error() << "--list-locations requires --mutator to be given"
+                      << message.eom;
+      exit(CPROVER_EXIT_USAGE_ERROR);
+    }
+    options.set_option("mutation-list", true);
+  }
+
+  if(cmdline.isset("mutate"))
+  {
+    if(!cmdline.isset("mutator"))
+    {
+      message.error() << "Mutator not selected. Pass the --mutator flag to "
+                         "select mutator"
+                      << message.eom;
+      exit(CPROVER_EXIT_USAGE_ERROR);
+    }
+    try
+    {
+      options.set_option("mutation-location",
+          (unsigned int)std::stoul(cmdline.get_value("mutate")));
+    }
+    catch(...)
+    {
+      message.error() << "Invalid mutaion location \""
+                      << cmdline.get_value("mutate") << "\"."
+                      << message.eom;
+      exit(CPROVER_EXIT_USAGE_ERROR);
+    }
+    options.set_option("mutate", true);
+  }
+}
+
+std::unique_ptr<mutationt> mutation_strategy_choosert::get(
+    const std::string strategy) const
+{
+  if(strategy.empty())
+    return mutationt::factory(NOOP);
+
+  auto found = strategies.find(strategy);
+  INVARIANT(
+    found != strategies.end(), "Unknown strategy '" + strategy + "'.");
+  return found->second.second();
 }
 
 mutation_strategy_choosert::mutation_strategy_choosert()
