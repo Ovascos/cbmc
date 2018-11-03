@@ -1,4 +1,5 @@
 #include "mutation.h"
+
 #include <util/std_expr.h>
 
 static inline bool has_n_op(const exprt &ex, unsigned int n) {

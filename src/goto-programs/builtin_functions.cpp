@@ -769,10 +769,8 @@ void goto_convertt::do_function_call_symbol(
       identifier==CPROVER_PREFIX "mut_input";
 
     goto_programt::targett t=dest.add_instruction(is_input ? MUT_INPUT : MUT_OUTPUT);
-    // ToDo: guard might be wrong here
     t->guard=arguments[0];
     t->source_location=function.source_location();
-    //t->source_location.set_property_class(ID_assertion);
 
     if(lhs.is_not_nil())
     {

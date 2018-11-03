@@ -49,14 +49,14 @@ protected:
 };
 
 #define OPT_MBMC                                                               \
-  "(list-mutators)"                                                            \
+  "(show-mutators)"                                                            \
   "(mutator):"                                                                 \
   "(list-locations)(mutate):"
 
 #define HELP_MBMC                                                              \
-  " --list-mutators              list possible mutators\n"                     \
+  " --show-mutators              list available mutators\n"                    \
   " --mutator                    specify mutator to use\n"                     \
-  "                              (use --list-mutators to get mutator IDs)\n"   \
+  "                              (use --show-mutators to get mutator names)\n" \
   " --list-locations             show possible locatons to be mutated\n"       \
   " --mutate                     perform mutation on specified location\n"     \
   "                              (use --list-locations to get location IDs)\n"

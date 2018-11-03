@@ -142,6 +142,12 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
     exit(CPROVER_EXIT_USAGE_ERROR);
   }
 
+  if(cmdline.isset("show-mutators"))
+  {
+    std::cout << mutation_strategy_chooser.show_strategies();
+    exit(CPROVER_EXIT_SUCCESS);
+  }
+
   if(cmdline.isset("full-slice"))
     options.set_option("full-slice", true);
 
@@ -152,6 +158,8 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
   }
 
   path_strategy_chooser.set_path_strategy_options(cmdline, options, *this);
+  mutation_strategy_chooser.set_mutation_strategy_options(
+      cmdline, options, *this);
 
   if(cmdline.isset("program-only"))
     options.set_option("program-only", true);
@@ -311,15 +319,6 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
     if(cmdline.isset("string-max-length"))
       options.set_option(
         "string-max-length", cmdline.get_value("string-max-length"));
-  }
-
-  if(cmdline.isset("list-mutators") || cmdline.isset("mutator"))
-  {
-    options.set_option("mutation_test", true);
-    if(cmdline.isset("mutator"))
-    {
-      options.set_option("mutator", cmdline.get_value("mutator"));
-    }
   }
 
   if(cmdline.isset("max-node-refinement"))
@@ -544,14 +543,16 @@ int cbmc_parse_optionst::doit()
   }
 
   if(cmdline.isset("list-locations")) {
-    mutatort mutator(PLUS_ONE_REMOVE);
+    mutatort mutator(mutation_strategy_chooser.get(
+          options.get_option("mutation-strategy")));
     mutator.analyze(goto_model);
     mutator.show_location_ids(ui_message_handler.get_ui());
     return CPROVER_EXIT_SUCCESS;
   }
 
   if(cmdline.isset("mutate")) {
-    mutatort mutator(PLUS_ONE_REMOVE);
+    mutatort mutator(mutation_strategy_chooser.get(
+          options.get_option("mutation-strategy")));
 
     mutator.analyze(goto_model);
 

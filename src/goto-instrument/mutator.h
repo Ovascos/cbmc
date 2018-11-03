@@ -27,8 +27,8 @@ struct mutation_locationt
 class mutatort
 {
 public:
-  mutatort(mutation_typet mtype)
-    : mutation(mutationt::factory(mtype))
+  mutatort(std::unique_ptr<mutationt> _m)
+    : mutation(std::move(_m))
   {
   }
 

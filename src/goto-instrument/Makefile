@@ -48,6 +48,7 @@ SRC = accelerate/accelerate.cpp \
       model_argc_argv.cpp \
 	  mutator.cpp \
 	  mutation.cpp \
+	  mutation_strategy_chooser.cpp \
       nondet_static.cpp \
       nondet_volatile.cpp \
       object_id.cpp \

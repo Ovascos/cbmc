@@ -44,6 +44,7 @@ OBJ += ../ansi-c/ansi-c$(LIBEXT) \
       ../goto-instrument/unwindset$(OBJEXT) \
       ../goto-instrument/mutator$(OBJEXT) \
       ../goto-instrument/mutation$(OBJEXT) \
+      ../goto-instrument/mutation_strategy_chooser$(OBJEXT) \
       ../analyses/analyses$(LIBEXT) \
       ../langapi/langapi$(LIBEXT) \
       ../xmllang/xmllang$(LIBEXT) \
