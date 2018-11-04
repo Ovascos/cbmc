@@ -24,7 +24,7 @@ public:
   bmc_all_propertiest(
     const goto_functionst &_goto_functions,
     prop_convt &_solver,
-    bmct &_bmc):
+    checkert &_bmc):
     goto_functions(_goto_functions), solver(_solver), bmc(_bmc)
   {
   }
@@ -87,7 +87,7 @@ public:
 protected:
   const goto_functionst &goto_functions;
   prop_convt &solver;
-  bmct &bmc;
+  checkert &bmc;
 
   virtual void report(const cover_goalst &cover_goals);
   virtual void do_before_solving() {}

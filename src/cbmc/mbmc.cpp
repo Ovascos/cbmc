@@ -43,6 +43,8 @@ int mbmct::do_mbmc(
 
   std::unique_ptr<path_storaget> worklist = path_strategy_chooser.get("fifo");
 
+  mutator.mutate(opts.get_unsigned_int_option("mutation-location"));
+
   try
   {
     cbmc_solverst solvers(opts, symbol_table, message.get_message_handler());

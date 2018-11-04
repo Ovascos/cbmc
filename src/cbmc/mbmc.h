@@ -12,7 +12,7 @@
 #include <goto-instrument/mutator.h>
 
 // ToDo: separate bmct into bmct and checkert
-class mbmct : public bmct
+class mbmct : public checkert
 {
 public:
   mbmct(
@@ -22,7 +22,7 @@ public:
     prop_convt &_prop_conv,
     path_storaget &_path_storage,
     mutatort &_mutator)
-    : bmct(
+    : checkert(
         _options,
         _outer_symbol_table,
         _message_handler,

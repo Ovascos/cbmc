@@ -227,7 +227,7 @@ void bmc_all_propertiest::report(const cover_goalst &cover_goals)
   }
 }
 
-safety_checkert::resultt bmct::all_properties(
+safety_checkert::resultt checkert::all_properties(
   const goto_functionst &goto_functions,
   prop_convt &solver)
 {

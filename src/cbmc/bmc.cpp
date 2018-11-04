@@ -42,12 +42,12 @@ Author: Daniel Kroening, kroening@kroening.com
 /// solving with MiniSat SimpSolver.
 /// Potentially a useful hook for other applications using
 /// incremental solving.
-void bmct::freeze_program_variables()
+void checkert::freeze_program_variables()
 {
   // this is a hook for cegis
 }
 
-void bmct::error_trace()
+void checkert::error_trace()
 {
   status() << "Building error trace" << eom;
 
@@ -89,7 +89,7 @@ void bmct::error_trace()
 }
 
 /// outputs witnesses in graphml format
-void bmct::output_graphml(resultt result)
+void checkert::output_graphml(resultt result)
 {
   const std::string graphml=options.get_option("graphml-witness");
   if(graphml.empty())
@@ -112,7 +112,7 @@ void bmct::output_graphml(resultt result)
   }
 }
 
-void bmct::do_conversion()
+void checkert::do_conversion()
 {
   status() << "converting SSA" << eom;
 
@@ -124,7 +124,7 @@ void bmct::do_conversion()
 }
 
 decision_proceduret::resultt
-bmct::run_decision_procedure(prop_convt &prop_conv)
+checkert::run_decision_procedure(prop_convt &prop_conv)
 {
   status() << "Passing problem to "
            << prop_conv.decision_procedure_text() << eom;
@@ -203,7 +203,7 @@ void bmct::report_failure()
   }
 }
 
-void bmct::get_memory_model()
+void checkert::get_memory_model()
 {
   const std::string mm=options.get_option("mm");
 
@@ -220,7 +220,7 @@ void bmct::get_memory_model()
   }
 }
 
-void bmct::setup()
+void checkert::setup()
 {
   get_memory_model();
 
@@ -238,7 +238,7 @@ void bmct::setup()
   symex.unwindset.parse_unwindset(options.get_option("unwindset"));
 }
 
-safety_checkert::resultt bmct::execute(
+safety_checkert::resultt checkert::execute(
   abstract_goto_modelt &goto_model)
 {
   try
@@ -251,15 +251,45 @@ safety_checkert::resultt bmct::execute(
 
     perform_symbolic_execution(get_goto_function);
 
+    if(symex.should_pause_symex)
+      return safety_checkert::resultt::PAUSED;
+
+    return safety_checkert::resultt::UNKNOWN;
+  }
+  catch(const std::string &error_str)
+  {
+    messaget message(get_message_handler());
+    message.error().source_location=symex.last_source_location;
+    message.error() << error_str << messaget::eom;
+
+    return safety_checkert::resultt::ERROR;
+  }
+  catch(const char *error_str)
+  {
+    messaget message(get_message_handler());
+    message.error().source_location=symex.last_source_location;
+    message.error() << error_str << messaget::eom;
+
+    return safety_checkert::resultt::ERROR;
+  }
+  catch(const std::bad_alloc &)
+  {
+    error() << "Out of memory" << eom;
+    return safety_checkert::resultt::ERROR;
+  }
+}
+
+safety_checkert::resultt checkert::solve(
+  abstract_goto_modelt &goto_model)
+{
+  try
+  {
     // Borrow a reference to the goto functions map. This reference, or
     // iterators pointing into it, must not be stored by this function or its
     // callees, as goto_model.get_goto_function (as used by symex)
     // will have side-effects on it.
     const goto_functionst &goto_functions =
       goto_model.get_goto_functions();
-
-    if(symex.should_pause_symex)
-      return safety_checkert::resultt::PAUSED;
 
     // This provides the driver program the opportunity to do things like a
     // symbol-table or goto-functions dump instead of actually running the
@@ -354,7 +384,7 @@ safety_checkert::resultt bmct::execute(
   }
 }
 
-void bmct::slice()
+void checkert::slice()
 {
   if(options.get_option("slice-by-trace")!="")
   {
@@ -396,15 +426,19 @@ void bmct::slice()
                << " remaining after simplification" << eom;
 }
 
-safety_checkert::resultt bmct::run(
-  abstract_goto_modelt &goto_model)
-{
+safety_checkert::resultt checkert::run(abstract_goto_modelt &model) {
   setup();
 
-  return execute(goto_model);
+  resultt result_after_symex = execute(model);
+  if(result_after_symex == safety_checkert::resultt::ERROR)
+    return safety_checkert::resultt::ERROR;
+  if(result_after_symex == safety_checkert::resultt::PAUSED)
+    return safety_checkert::resultt::PAUSED;
+
+  return solve(model);
 }
 
-safety_checkert::resultt bmct::decide(
+safety_checkert::resultt checkert::decide(
   const goto_functionst &goto_functions,
   prop_convt &prop_conv)
 {
@@ -416,7 +450,7 @@ safety_checkert::resultt bmct::decide(
     return all_properties(goto_functions, prop_conv);
 }
 
-void bmct::show()
+void checkert::show()
 {
   if(options.get_bool_option("show-vcc"))
   {
@@ -429,7 +463,7 @@ void bmct::show()
   }
 }
 
-safety_checkert::resultt bmct::stop_on_fail(prop_convt &prop_conv)
+safety_checkert::resultt checkert::stop_on_fail(prop_convt &prop_conv)
 {
   switch(run_decision_procedure(prop_conv))
   {
@@ -610,7 +644,7 @@ int bmct::do_language_agnostic_bmc(
   UNREACHABLE;
 }
 
-void bmct::perform_symbolic_execution(
+void checkert::perform_symbolic_execution(
   goto_symext::get_goto_functiont get_goto_function)
 {
   symex.symex_from_entry_point_of(get_goto_function, symex_symbol_table);

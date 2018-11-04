@@ -27,7 +27,7 @@ class fault_localizationt:
 public:
   explicit fault_localizationt(
     const goto_functionst &_goto_functions,
-    bmct &_bmc,
+    checkert &_bmc,
     const optionst &_options)
     :
     bmc_all_propertiest(_goto_functions, _bmc.prop_conv, _bmc),
@@ -46,7 +46,7 @@ public:
 
 protected:
   const goto_functionst &goto_functions;
-  bmct &bmc;
+  checkert &bmc;
   const optionst &options;
 
   // the failed property
