@@ -298,6 +298,34 @@ void goto_symext::symex_from_entry_point_of(
     state, get_goto_function, new_symbol_table);
 }
 
+void goto_symext::symex_until_instruction(
+  statet &state,
+  const goto_functionst &goto_functions,
+  goto_programt::const_targett limit)
+{
+  symex_until_instruction(
+      state, get_function_from_goto_functions(goto_functions), limit);
+}
+
+void goto_symext::symex_until_instruction(
+  statet &state,
+  const get_goto_functiont &get_goto_function,
+  goto_programt::const_targett limit)
+{
+  const goto_functionst::goto_functiont *start_function;
+  try
+  {
+    start_function = &get_goto_function(goto_functionst::entry_point());
+  }
+  catch(const std::out_of_range &)
+  {
+    throw "the program has no entry point";
+  }
+  symex_instruction_range(state, get_goto_function,
+    start_function->body.instructions.begin(), limit);
+}
+
+
 /// do just one step
 void goto_symext::symex_step(
   const get_goto_functiont &get_goto_function,

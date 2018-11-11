@@ -14,13 +14,13 @@
 
 struct mutation_locationt
 {
-  mutation_locationt(goto_programt::instructiont &_instr, exprt &_expr)
-    : instr(&_instr),
+  mutation_locationt(goto_programt::const_targett &_instr, exprt &_expr)
+    : instr(_instr),
       expr(&_expr)
   {}
 
-  goto_programt::instructiont *const instr;
-  exprt                       *const expr;
+  goto_programt::const_targett instr;
+  exprt                 *const expr;
 };
 
 
@@ -39,14 +39,15 @@ public:
   void show_location_ids(ui_message_handlert::uit) const;
 
   void mutate(unsigned id);
+  goto_programt::const_targett get_instruction(unsigned id) const;
 
 protected:
-  struct expr_mutation_visotort;
+  struct expr_mutation_visitort;
 
   const std::unique_ptr<mutationt> mutation;
   std::vector<mutation_locationt> mutation_locations;
 
-  void match(goto_programt::instructiont &instr, exprt &ex);
+  void match(goto_programt::targett &instr, exprt &ex);
 };
 
 #endif // CPROVER_CBMC_MUTATOR_H

@@ -11,6 +11,8 @@ Author: Thomas Hader
 
 #include "mbmc.h"
 
+#include <iostream>
+
 #include <util/options.h>
 #include <util/exit_codes.h>
 #include <util/ui_message.h>
@@ -19,10 +21,73 @@ Author: Thomas Hader
 #include <goto-programs/goto_model.h>
 
 #include <goto-symex/symex_target_equation.h>
+#include <goto-symex/goto_symex_state.h>
 #include <goto-symex/path_storage.h>
 
 #include "symex_bmc.h"
 #include "cbmc_solvers.h"
+
+#if 0
+// ToDo implement symex callbacks for input and output
+safety_checkert::resultt mbmct::run(abstract_goto_modelt &model) {
+  resultt result_after_symex;
+
+  // generate symex_target_equation for unmodified program
+  setup();
+  result_after_symex = execute(model);
+  if(result_after_symex == safety_checkert::resultt::ERROR)
+    return safety_checkert::resultt::ERROR;
+
+  INVARIANT(result_after_symex != safety_checkert::resultt::PAUSED,
+      "Path exploration is not supported in MBMC");
+
+  // ToDo rename SSA-variables
+
+  // perform mutation
+  mutator.mutate(options.get_unsigned_int_option("mutation-location"));
+
+  // generate symex_target_equation for modified program
+  result_after_symex = execute(model);
+  if(result_after_symex == safety_checkert::resultt::ERROR)
+    return safety_checkert::resultt::ERROR;
+
+  INVARIANT(result_after_symex != safety_checkert::resultt::PAUSED,
+      "Path exploration is not supported in MBMC");
+
+  // ToDo add assumes and asserts
+
+  return solve(model);
+}
+#endif
+
+void mbmct::perform_symbolic_execution(
+  goto_symext::get_goto_functiont get_goto_function)
+{
+  unsigned mut_id = options.get_unsigned_int_option("mutation-location");
+
+  goto_symex_statet state;
+  symex.symex_until_instruction(state, get_goto_function, mutator.get_instruction(mut_id));
+
+  // don't use resume_symex_from_saved_state because our state and equation
+  // are still valid (since we are in the same mbmct instance)
+
+  // ToDo maybe copy symbol_table as well
+  // ToDo insert necesary copy equations
+  // Since statet has a huge memory footprint, let it go out of scopt asap
+  {
+    goto_symex_statet state_orig(state, &equation);
+    symex.symex_with_state(state_orig, get_goto_function, symex_symbol_table);
+  }
+
+  mutator.mutate(mut_id);
+
+  {
+    goto_symex_statet state_mut(state, &equation);
+    symex.symex_with_state(state_mut, get_goto_function, symex_symbol_table);
+  }
+
+  // ToDo insert necessary asserts
+}
 
 int mbmct::do_mbmc(
   const path_strategy_choosert &path_strategy_chooser, // not used
@@ -42,8 +107,6 @@ int mbmct::do_mbmc(
     "Path evaluation is not supported yet.");
 
   std::unique_ptr<path_storaget> worklist = path_strategy_chooser.get("fifo");
-
-  mutator.mutate(opts.get_unsigned_int_option("mutation-location"));
 
   try
   {
@@ -89,5 +152,14 @@ int mbmct::do_mbmc(
     UNREACHABLE;
   }
   UNREACHABLE;
+}
+
+void mbmct::report_success() {
+  std::cout << "Juhu" << std::endl;
+}
+
+// ToDo check if failed assertion(s) had been added by user program or mbmc
+void mbmct::report_failure() {
+  std::cout << "Buuh" << std::endl;
 }
 

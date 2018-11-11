@@ -165,6 +165,26 @@ public:
     goto_programt::const_targett first,
     goto_programt::const_targett limit);
 
+  /// Symexes from entry point and the given state, terminating as
+  /// soon as the last instruction is reached.
+  /// \param state Symex state to start with.
+  /// \param goto_functions GOTO model to symex.
+  /// \param limit Final instruction, which itself will not be symexed.
+  virtual void symex_until_instruction(
+    statet &,
+    const goto_functionst &,
+    goto_programt::const_targett limit);
+
+  /// Symexes from entry point and the given state, terminating as
+  /// soon as the last instruction is reached.
+  /// \param state Symex state to start with.
+  /// \param goto_functions GOTO model to symex.
+  /// \param limit Final instruction, which itself will not be symexed.
+  virtual void symex_until_instruction(
+    statet &state,
+    const get_goto_functiont &get_goto_function,
+    goto_programt::const_targett limit);
+
   /// \brief Have states been pushed onto the workqueue?
   ///
   /// If this flag is set at the end of a symbolic execution run, it means that

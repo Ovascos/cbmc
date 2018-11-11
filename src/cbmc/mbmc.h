@@ -11,7 +11,6 @@
 
 #include <goto-instrument/mutator.h>
 
-// ToDo: separate bmct into bmct and checkert
 class mbmct : public checkert
 {
 public:
@@ -30,12 +29,9 @@ public:
         _path_storage,
         nullptr),
       mutator(_mutator)
-  {
+  { }
 
-  }
-
-
-  // ToDo path exploration is unspupported here
+  // path exploration is unspupported here
   static int do_mbmc(
     const path_strategy_choosert &path_strategy_chooser, // not used
     const optionst &opts,
@@ -46,6 +42,12 @@ public:
 
 protected:
   mutatort &mutator;
+
+  virtual void report_success() override;
+  virtual void report_failure() override;
+
+private:
+  void perform_symbolic_execution(goto_symext::get_goto_functiont get_goto_function) override;
 };
 
 #define OPT_MBMC                                                               \

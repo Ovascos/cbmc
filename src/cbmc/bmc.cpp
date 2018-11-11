@@ -232,8 +232,6 @@ void checkert::setup()
 
   status() << "Starting Bounded Model Checking" << eom;
 
-  symex.last_source_location.make_nil();
-
   symex.unwindset.parse_unwind(options.get_option("unwind"));
   symex.unwindset.parse_unwindset(options.get_option("unwindset"));
 }
@@ -243,6 +241,8 @@ safety_checkert::resultt checkert::execute(
 {
   try
   {
+    symex.last_source_location.make_nil();
+
     auto get_goto_function = [&goto_model](const irep_idt &id) ->
       const goto_functionst::goto_functiont &
     {

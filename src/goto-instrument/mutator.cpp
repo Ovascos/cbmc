@@ -35,17 +35,23 @@ void mutatort::mutate(unsigned id)
   mutation->mutate_expr(*(mutation_locations[id].expr));
 }
 
-struct mutatort::expr_mutation_visotort : expr_visitort
+goto_programt::const_targett mutatort::get_instruction(unsigned id) const {
+  INVARIANT(id < mutation_locations.size(),
+      "invlid mutation id int mutate() call");
+  return mutation_locations[id].instr;
+}
+
+struct mutatort::expr_mutation_visitort : expr_visitort
 {
-  expr_mutation_visotort(
+  expr_mutation_visitort(
     mutatort &_mutator,
-    goto_programt::instructiont &_instr)
+    goto_programt::const_targett _instr)
     : mutator(_mutator),
       instr(_instr)
   {}
 
   mutatort &mutator;
-  goto_programt::instructiont &instr;
+  goto_programt::const_targett instr;
 
   void operator()(exprt &ex) override
   {
@@ -54,9 +60,9 @@ struct mutatort::expr_mutation_visotort : expr_visitort
   }
 };
 
-void mutatort::match(goto_programt::instructiont &instr, exprt &ex)
+void mutatort::match(goto_programt::targett &instr, exprt &ex)
 {
-  expr_mutation_visotort visit(*this, instr);
+  expr_mutation_visitort visit(*this, instr);
   ex.visit(visit);
 }
 
@@ -84,19 +90,19 @@ void mutatort::analyze(goto_programt &goto_program)
     switch(it->type) {
       case FUNCTION_CALL:
         // ToDo check if function call has a guard and/or code
-        match(*it, it->code);
-        match(*it, it->guard);
+        match(it, it->code);
+        match(it, it->guard);
         break;
 
       case GOTO:
         // mutate guard
-        match(*it, it->guard);
+        match(it, it->guard);
         break;
 
       case ASSIGN:
       case RETURN:
       case OTHER:
-        match(*it, it->code);
+        match(it, it->code);
         break;
 
       case ASSUME:
