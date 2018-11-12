@@ -56,6 +56,7 @@ public:
     ode.object()=get_original_expr();
 
     ssa_exprt root(ode.root_object());
+    root.set(ID_PREFIX, get(ID_PREFIX));
     root.set(ID_L0, get(ID_L0));
     root.set(ID_L1, get(ID_L1));
     root.update_identifier();
@@ -78,6 +79,11 @@ public:
   {
     ssa_exprt o(get_original_expr());
     return o.get_identifier();
+  }
+
+  void set_prefix(unsigned p) {
+    set(ID_PREFIX, p);
+    update_identifier();
   }
 
   void set_level_0(unsigned i)
@@ -104,6 +110,11 @@ public:
     update_identifier();
   }
 
+  const irep_idt get_prefix() const
+  {
+    return get(ID_PREFIX);
+  }
+
   const irep_idt get_level_0() const
   {
     return get(ID_L0);
@@ -121,17 +132,19 @@ public:
 
   void update_identifier()
   {
+    const irep_idt &pre=get_prefix();
     const irep_idt &l0=get_level_0();
     const irep_idt &l1=get_level_1();
     const irep_idt &l2=get_level_2();
 
-    auto idpair=build_identifier(get_original_expr(), l0, l1, l2);
+    auto idpair=build_identifier(get_original_expr(), pre, l0, l1, l2);
     set_identifier(idpair.first);
     set(ID_L1_object_identifier, idpair.second);
   }
 
   static std::pair<irep_idt, irep_idt> build_identifier(
     const exprt &src,
+    const irep_idt &pre,
     const irep_idt &l0,
     const irep_idt &l1,
     const irep_idt &l2);

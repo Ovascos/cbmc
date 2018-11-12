@@ -76,6 +76,7 @@ void mbmct::perform_symbolic_execution(
   // Since statet has a huge memory footprint, let it go out of scopt asap
   {
     goto_symex_statet state_orig(state, &equation);
+    state_orig.prefix.set(1);
     symex.symex_with_state(state_orig, get_goto_function, symex_symbol_table);
   }
 
@@ -83,6 +84,7 @@ void mbmct::perform_symbolic_execution(
 
   {
     goto_symex_statet state_mut(state, &equation);
+    state_mut.prefix.set(2);
     symex.symex_with_state(state_mut, get_goto_function, symex_symbol_table);
   }
 
