@@ -26,39 +26,7 @@ Author: Thomas Hader
 
 #include "symex_bmc.h"
 #include "cbmc_solvers.h"
-
-#if 0
-// ToDo implement symex callbacks for input and output
-safety_checkert::resultt mbmct::run(abstract_goto_modelt &model) {
-  resultt result_after_symex;
-
-  // generate symex_target_equation for unmodified program
-  setup();
-  result_after_symex = execute(model);
-  if(result_after_symex == safety_checkert::resultt::ERROR)
-    return safety_checkert::resultt::ERROR;
-
-  INVARIANT(result_after_symex != safety_checkert::resultt::PAUSED,
-      "Path exploration is not supported in MBMC");
-
-  // ToDo rename SSA-variables
-
-  // perform mutation
-  mutator.mutate(options.get_unsigned_int_option("mutation-location"));
-
-  // generate symex_target_equation for modified program
-  result_after_symex = execute(model);
-  if(result_after_symex == safety_checkert::resultt::ERROR)
-    return safety_checkert::resultt::ERROR;
-
-  INVARIANT(result_after_symex != safety_checkert::resultt::PAUSED,
-      "Path exploration is not supported in MBMC");
-
-  // ToDo add assumes and asserts
-
-  return solve(model);
-}
-#endif
+#include "symex_target_merge_equation.h"
 
 void mbmct::perform_symbolic_execution(
   goto_symext::get_goto_functiont get_goto_function)
@@ -71,12 +39,10 @@ void mbmct::perform_symbolic_execution(
   // don't use resume_symex_from_saved_state because our state and equation
   // are still valid (since we are in the same mbmct instance)
 
-  // ToDo maybe copy symbol_table as well
-  // ToDo insert necesary copy equations
   // Since statet has a huge memory footprint, let it go out of scopt asap
   {
     goto_symex_statet state_orig(state, &equation);
-    state_orig.prefix.set(1);
+    //state_orig.prefix.set(1);
     symex.symex_with_state(state_orig, get_goto_function, symex_symbol_table);
   }
 
@@ -84,9 +50,16 @@ void mbmct::perform_symbolic_execution(
 
   {
     goto_symex_statet state_mut(state, &equation);
-    state_mut.prefix.set(2);
+    //state_mut.prefix.set(2);
     symex.symex_with_state(state_mut, get_goto_function, symex_symbol_table);
   }
+
+  std::cout << "Merging" << std::endl;
+  symex_target_merge_equationt merger(equation);
+  std::cout << std::endl;
+  merger.merge(1);
+  std::cout << std::endl;
+  merger.merge(2);
 
   // ToDo insert necessary asserts
 }

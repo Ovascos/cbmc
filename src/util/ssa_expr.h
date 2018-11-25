@@ -11,6 +11,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #define CPROVER_UTIL_SSA_EXPR_H
 
 #include "std_expr.h"
+#include <tuple>
 
 /*! \brief Expression providing an SSA-renamed symbol of expressions
 */
@@ -62,6 +63,11 @@ public:
     root.update_identifier();
 
     return root;
+  }
+
+  const irep_idt get_prefixfree_object_identifier() const
+  {
+    return get(ID_prefixfree_object_identifier);
   }
 
   const irep_idt get_l1_object_identifier() const
@@ -138,11 +144,12 @@ public:
     const irep_idt &l2=get_level_2();
 
     auto idpair=build_identifier(get_original_expr(), pre, l0, l1, l2);
-    set_identifier(idpair.first);
-    set(ID_L1_object_identifier, idpair.second);
+    set_identifier(std::get<0>(idpair));
+    set(ID_L1_object_identifier, std::get<1>(idpair));
+    set(ID_prefixfree_object_identifier, std::get<2>(idpair));
   }
 
-  static std::pair<irep_idt, irep_idt> build_identifier(
+  static std::tuple<irep_idt, irep_idt, irep_idt> build_identifier(
     const exprt &src,
     const irep_idt &pre,
     const irep_idt &l0,

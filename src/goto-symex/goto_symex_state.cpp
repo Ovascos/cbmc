@@ -34,30 +34,6 @@ goto_symex_statet::goto_symex_statet()
 
 goto_symex_statet::~goto_symex_statet()=default;
 
-void goto_symex_statet::prefixt::operator()(
-  ssa_exprt &ssa_expr,
-  const namespacet &)
-{
-  if(value == -1)
-    return;
-
-  if(!ssa_expr.get_prefix().empty())
-    return;
-
-  // rename everything!
-  ssa_expr.set_prefix(value);
-}
-
-void goto_symex_statet::prefixt::set(char val)
-{
-  value = val;
-}
-
-void goto_symex_statet::prefixt::clear()
-{
-  value = -1;
-}
-
 void goto_symex_statet::level0t::operator()(
   ssa_exprt &ssa_expr,
   const namespacet &ns,
@@ -426,8 +402,6 @@ void goto_symex_statet::set_ssa_indices(
   const namespacet &ns,
   levelt level)
 {
-  prefix(ssa_expr, ns);
-
   switch(level)
   {
   case L0:

@@ -94,22 +94,6 @@ public:
     }
   };
 
-  struct prefixt:public renaming_levelt
-  {
-    void operator()(
-      ssa_exprt &ssa_expr,
-      const namespacet &);
-
-    prefixt() : value(-1) { }
-    virtual ~prefixt() { }
-
-    void set(char val);
-    void clear();
-
-  private:
-    int value;
-  } prefix;
-
   // level 0 -- threads!
   // renaming built for one particular interleaving
   struct level0t:public renaming_levelt
