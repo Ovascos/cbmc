@@ -18,37 +18,7 @@
 class checkert : public safety_checkert
 {
 public:
-  checkert(
-    const optionst &_options,
-    const symbol_tablet &outer_symbol_table,
-    message_handlert &_message_handler,
-    prop_convt &_prop_conv,
-    path_storaget &_path_storage,
-    std::function<bool(void)> callback_after_symex)
-    : safety_checkert(ns, _message_handler),
-      options(_options),
-      outer_symbol_table(outer_symbol_table),
-      ns(outer_symbol_table, symex_symbol_table),
-      equation(),
-      path_storage(_path_storage),
-      symex(
-        _message_handler,
-        outer_symbol_table,
-        equation,
-        options,
-        path_storage),
-      prop_conv(_prop_conv),
-      ui(ui_message_handlert::uit::PLAIN),
-      driver_callback_after_symex(callback_after_symex)
-  {
-    symex.constant_propagation=options.get_bool_option("propagation");
-    symex.record_coverage=
-      !options.get_option("symex-coverage-report").empty();
-    symex.self_loops_to_assumptions =
-      options.get_bool_option("self-loops-to-assumptions");
-  }
-
-  virtual ~checkert() { }
+  virtual ~checkert() = default;
 
   virtual resultt run(const goto_functionst &goto_functions)
   {
@@ -101,7 +71,7 @@ protected:
     : safety_checkert(ns, _message_handler),
       options(_options),
       outer_symbol_table(outer_symbol_table),
-      ns(outer_symbol_table),
+      ns(outer_symbol_table, symex_symbol_table),
       equation(_equation),
       path_storage(_path_storage),
       symex(
@@ -117,10 +87,8 @@ protected:
     symex.constant_propagation = options.get_bool_option("propagation");
     symex.record_coverage =
       !options.get_option("symex-coverage-report").empty();
-    INVARIANT(
-      options.get_bool_option("paths"),
-      "Should only use saved equation & goto_state constructor "
-      "when doing path exploration");
+    symex.self_loops_to_assumptions =
+      options.get_bool_option("self-loops-to-assumptions");
   }
 
   const optionst &options;
@@ -129,7 +97,7 @@ protected:
   /// \brief symbol table generated during symbolic execution
   symbol_tablet symex_symbol_table;
   namespacet ns;
-  symex_target_equationt equation;
+  symex_target_equationt &equation;
   path_storaget &path_storage;
   symex_bmct symex;
   prop_convt &prop_conv;

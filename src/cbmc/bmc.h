@@ -66,8 +66,10 @@ public:
         outer_symbol_table,
         _message_handler,
         _prop_conv,
+        equation,
         _path_storage,
-        callback_after_symex)
+        callback_after_symex),
+      equation()
   { }
 
   virtual ~bmct() { }
@@ -83,6 +85,8 @@ public:
     std::function<bool(void)> callback_after_symex = nullptr);
 
 protected:
+  symex_target_equationt equation;
+
   bmct(
     const optionst &_options,
     const symbol_tablet &outer_symbol_table,
@@ -96,9 +100,10 @@ protected:
         outer_symbol_table,
         _message_handler,
         _prop_conv,
-        _equation,
+        equation,
         _path_storage,
-        callback_after_symex)
+        callback_after_symex),
+      equation(_equation)
   { }
 
   virtual void report_success() override;

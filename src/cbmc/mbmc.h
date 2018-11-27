@@ -10,6 +10,7 @@
 #include <goto-instrument/mutator.h>
 
 #include "checker.h"
+#include "symex_target_merge_equation.h"
 
 class mbmct : public checkert
 {
@@ -26,9 +27,11 @@ public:
         _outer_symbol_table,
         _message_handler,
         _prop_conv,
+        equation,
         _path_storage,
         nullptr),
-      mutator(_mutator)
+      mutator(_mutator),
+      equation()
   { }
 
   // path exploration is unspupported here
@@ -42,6 +45,7 @@ public:
 
 protected:
   mutatort &mutator;
+  symex_target_merge_equationt equation;
 
   virtual void report_success() override;
   virtual void report_failure() override;

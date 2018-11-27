@@ -9,10 +9,7 @@ class symex_target_merge_equationt : public symex_target_equationt
 {
 public:
   typedef int prefixt;
-
   typedef std::unordered_map<irep_idt, ssa_exprt> ssa_symbolst;
-  typedef std::unordered_map<prefixt, ssa_symbolst> ssa_prefix_symbols;
-
   typedef std::unordered_set<irep_idt> ssa_renamingst;
   typedef std::unordered_map<prefixt, ssa_renamingst> ssa_prefix_renamingst;
 
@@ -22,17 +19,15 @@ public:
 
   symex_target_merge_equationt()
     : prefix(NO_PREFIX)
-  {
-    ssa_store[NO_PREFIX];
-  }
+  { }
 
   void set_prefix(int prefix);
 
 protected:
   int prefix;
 
-  /// stores all SSA symbols by prefix. (they are stored unrenamed)
-  ssa_prefix_symbols ssa_store;
+  /// stores all that occur without prefix.
+  ssa_symbolst ssa_store;
   /// stores all SSA symbols (by prefix) which are already renamed
   /// They are stored without prefix.
   ssa_prefix_renamingst ssa_renamings;
@@ -41,6 +36,7 @@ protected:
   void check(ssa_renamingst &renamings, exprt &ex);
   void perform_renamings(ssa_renamingst &renamings);
   void perform_renamings(const SSA_stept &, const ssa_renamingst &);
+  void add_equal_assumption(const ssa_exprt &ex, const sourcet &source);
 
 private:
   struct ssa_rename_visitort;

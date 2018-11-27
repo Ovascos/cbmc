@@ -2,6 +2,7 @@
 
 #include <util/expr.h>
 #include <util/ssa_expr.h>
+#include <util/std_expr.h>
 #include <util/invariant.h>
 
 #include <unordered_set>
@@ -26,15 +27,18 @@ struct symex_target_merge_equationt::ssa_rename_visitort
       return;
 
     ssa_exprt &ssa_ex = to_ssa_expr(ex);
-    INVARIANT(eq.ssa_store[eq.prefix].count(ssa_ex.get_identifier()) > 0,
-        "SSA violation");
 
-    if(eq.prefix != NO_PREFIX)
+    if(eq.prefix == NO_PREFIX)
     {
-      const ssa_symbolst &no_prefix = eq.ssa_store[NO_PREFIX];
+      // register occurrence
+      eq.ssa_store.emplace(ssa_ex.get_identifier(), ssa_ex);
+    }
+    else
+    {
+      // register and perform renaming
+      const ssa_symbolst &no_prefix = eq.ssa_store;
       if(no_prefix.count(ssa_ex.get_identifier()) > 0)
         rename.insert(ssa_ex.get_identifier()); 
-
       ssa_ex.set_prefix(eq.prefix);
     }
   }
@@ -52,9 +56,6 @@ void symex_target_merge_equationt::check(ssa_renamingst &renamings, exprt &ex)
 void symex_target_merge_equationt::rename(SSA_stept &step)
 {
   ssa_renamingst new_ren;
-
-  if(step.ssa_lhs.is_not_nil())
-    ssa_store[prefix].emplace(step.ssa_lhs.get_identifier(), step.ssa_lhs);
 
   check(new_ren, step.guard);
   check(new_ren, step.ssa_lhs);
@@ -76,7 +77,7 @@ void symex_target_merge_equationt::perform_renamings(
   for(irep_idt id : renamings)
   {
     // nothing to do if there is no no-prefix version
-    if(ssa_store[NO_PREFIX].count(id) == 0)
+    if(ssa_store.count(id) == 0)
       continue;
     // nothing to do if already renamed
     if(ssa_renamings[prefix].count(id) != 0)
@@ -84,16 +85,22 @@ void symex_target_merge_equationt::perform_renamings(
 
     ssa_renamings[prefix].insert(id);
     
-    INVARIANT(ssa_store[NO_PREFIX].count(id) > 0, "Didn't find original SSA");
-    INVARIANT(ssa_store[prefix].count(id) > 0, "Didn't find to be renamed SSA");
-
-    const ssa_exprt &orig = ssa_store[NO_PREFIX][id];
-    ssa_exprt ren = ssa_store[prefix][id];
-    ren.set_prefix(prefix);
-
-    std::cout << orig.get_identifier() << "<->" << ren.get_identifier() << std::endl;
-    //symex_target_equationt::assumption();
+    INVARIANT(ssa_store.count(id) > 0, "Didn't find original SSA");
+    add_equal_assumption(ssa_store[id], step.source);
   }
+}
+
+void symex_target_merge_equationt::add_equal_assumption(
+    const ssa_exprt &ex, const sourcet &source)
+{
+  PRECONDITION(prefix != NO_PREFIX);
+
+  ssa_exprt ren = ex;
+  ren.set_prefix(prefix);
+  equal_exprt eq(ex, ren);
+  constant_exprt const_true(ID_true, typet(ID_bool));
+
+  symex_target_equationt::assumption(const_true, eq, source);
 }
 
 void symex_target_merge_equationt::set_prefix(int _prefix)
@@ -229,7 +236,7 @@ void symex_target_merge_equationt::decl(
   rename(SSA_steps.back());
 }
 
-/// declare a fresh variable
+/// delete a variable
 void symex_target_merge_equationt::dead(
   const exprt &expr,
   const ssa_exprt &ssa_expr,
