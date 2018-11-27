@@ -1,4 +1,5 @@
 SRC = all_properties.cpp \
+	  checker.cpp \
       bmc.cpp \
 	  mbmc.cpp \
       bmc_cover.cpp \

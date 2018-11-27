@@ -1,8 +1,6 @@
 #ifndef CPROVER_CBMC_MBMC_H
 #define CPROVER_CBMC_MBMC_H
 
-#include "bmc.h"
-
 #include <util/options.h>
 #include <util/ui_message.h>
 
@@ -10,6 +8,8 @@
 #include <goto-symex/path_storage.h>
 
 #include <goto-instrument/mutator.h>
+
+#include "checker.h"
 
 class mbmct : public checkert
 {
