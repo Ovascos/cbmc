@@ -10,6 +10,7 @@ SRC = all_properties.cpp \
       fault_localization.cpp \
       symex_bmc.cpp \
       symex_coverage.cpp \
+      symex_target_merge_equation.cpp \
       xml_interface.cpp \
       # Empty last line
 
