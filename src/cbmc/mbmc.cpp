@@ -36,6 +36,9 @@ void mbmct::perform_symbolic_execution(
   goto_symex_statet state;
   symex.symex_until_instruction(state, get_goto_function, mutator.get_instruction(mut_id));
 
+  if(state.call_stack().empty())
+    throw "Mutation not reached.";
+
   // don't use resume_symex_from_saved_state because our state and equation
   // are still valid (since we are in the same mbmct instance)
 
