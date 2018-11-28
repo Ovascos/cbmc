@@ -87,6 +87,12 @@ void symex_target_merge_equationt::perform_renamings(
     
     INVARIANT(ssa_store.count(id) > 0, "Didn't find original SSA");
     add_equal_assumption(ssa_store[id], step.source);
+
+    // swap last two elements in order to insert assumption before the new step
+    auto it =  SSA_steps.rbegin();
+    SSA_stept &a = *it++;
+    SSA_stept &b = *it;
+    std::swap(a, b);
   }
 }
 
