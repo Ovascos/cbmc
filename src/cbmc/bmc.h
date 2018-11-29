@@ -105,9 +105,6 @@ protected:
         callback_after_symex),
       equation(_equation)
   { }
-
-  virtual void report_success() override;
-  virtual void report_failure() override;
 };
 
 /// \brief Symbolic execution from a saved branch point

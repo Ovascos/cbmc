@@ -15,60 +15,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include "cbmc_solvers.h"
 
-void bmct::report_success()
-{
-  result() << "VERIFICATION SUCCESSFUL" << eom;
-
-  switch(ui)
-  {
-  case ui_message_handlert::uit::PLAIN:
-    break;
-
-  case ui_message_handlert::uit::XML_UI:
-    {
-      xmlt xml("cprover-status");
-      xml.data="SUCCESS";
-      result() << xml;
-    }
-    break;
-
-  case ui_message_handlert::uit::JSON_UI:
-    {
-      json_objectt json_result;
-      json_result["cProverStatus"]=json_stringt("success");
-      result() << json_result;
-    }
-    break;
-  }
-}
-
-void bmct::report_failure()
-{
-  result() << "VERIFICATION FAILED" << eom;
-
-  switch(ui)
-  {
-  case ui_message_handlert::uit::PLAIN:
-    break;
-
-  case ui_message_handlert::uit::XML_UI:
-    {
-      xmlt xml("cprover-status");
-      xml.data="FAILURE";
-      result() << xml;
-    }
-    break;
-
-  case ui_message_handlert::uit::JSON_UI:
-    {
-      json_objectt json_result;
-      json_result["cProverStatus"]=json_stringt("failure");
-      result() << json_result;
-    }
-    break;
-  }
-}
-
 /// Perform core BMC, using an abstract model to supply GOTO function bodies
 /// (perhaps created on demand).
 /// \param opts: command-line options affecting BMC

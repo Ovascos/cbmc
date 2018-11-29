@@ -125,8 +125,8 @@ protected:
     const goto_functionst &goto_functions,
     prop_convt &solver);
   virtual resultt stop_on_fail(prop_convt &solver);
-  virtual void report_success() {}
-  virtual void report_failure() {}
+  virtual void report_success();
+  virtual void report_failure();
 
   virtual void error_trace();
   void output_graphml(resultt result);

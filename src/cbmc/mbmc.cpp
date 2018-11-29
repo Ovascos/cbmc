@@ -126,11 +126,13 @@ int mbmct::do_mbmc(
 }
 
 void mbmct::report_success() {
-  std::cout << "Juhu" << std::endl;
+  checkert::report_success();
+  std::cout << "Mutation check done" << std::endl;
 }
 
 // ToDo check if failed assertion(s) had been added by user program or mbmc
 void mbmct::report_failure() {
-  std::cout << "Buuh" << std::endl;
+  checkert::report_failure();
+  std::cout << "Mutation check done" << std::endl;
 }
 
