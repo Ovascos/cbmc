@@ -57,7 +57,7 @@ void mbmct::perform_symbolic_execution(
     symex.symex_with_state(state_mut, get_goto_function, symex_symbol_table);
   }
 
-  // ToDo insert necessary asserts
+  equation.insert_mutation_assertions();
 }
 
 int mbmct::do_mbmc(

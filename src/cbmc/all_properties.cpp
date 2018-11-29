@@ -85,6 +85,7 @@ safety_checkert::resultt bmc_all_propertiest::operator()()
         goal_map[property_id].description=it->comment;
       }
       else
+        // ToDo handle Mutation assertions
         continue;
 
       goal_map[property_id].instances.push_back(it);

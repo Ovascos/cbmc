@@ -68,11 +68,11 @@ void symex_target_merge_equationt::rename(SSA_stept &step)
   for(exprt &ex : step.ssa_function_arguments)
     check(new_ren, ex);
 
-  perform_renamings(step, new_ren);
+  perform_renamings(step.source, new_ren);
 }
 
 void symex_target_merge_equationt::perform_renamings(
-    const SSA_stept &step, const ssa_renamingst &renamings)
+    const sourcet &source, const ssa_renamingst &renamings)
 {
   for(irep_idt id : renamings)
   {
@@ -86,13 +86,7 @@ void symex_target_merge_equationt::perform_renamings(
     ssa_renamings[prefix].insert(id);
     
     INVARIANT(ssa_store.count(id) > 0, "Didn't find original SSA");
-    add_equal_assumption(ssa_store[id], step.source);
-
-    // swap last two elements in order to insert assumption before the new step
-    auto it =  SSA_steps.rbegin();
-    SSA_stept &a = *it++;
-    SSA_stept &b = *it;
-    std::swap(a, b);
+    add_equal_assumption(ssa_store[id], source);
   }
 }
 
@@ -100,13 +94,19 @@ void symex_target_merge_equationt::add_equal_assumption(
     const ssa_exprt &ex, const sourcet &source)
 {
   PRECONDITION(prefix != NO_PREFIX);
+  PRECONDITION(SSA_steps.size() >= 1);
 
   ssa_exprt ren = ex;
   ren.set_prefix(prefix);
   equal_exprt eq(ex, ren);
-  constant_exprt const_true(ID_true, typet(ID_bool));
 
-  symex_target_equationt::assumption(const_true, eq, source);
+  symex_target_equationt::assumption(true_exprt(), eq, source);
+
+  // swap last two elements in order to insert assumption before the new step
+  auto it =  SSA_steps.rbegin();
+  SSA_stept &a = *it++;
+  SSA_stept &b = *it;
+  std::swap(a, b);
 }
 
 void symex_target_merge_equationt::set_prefix(int _prefix)
@@ -115,10 +115,99 @@ void symex_target_merge_equationt::set_prefix(int _prefix)
   prefix = _prefix;
 }
 
+void symex_target_merge_equationt::insert_mutation_assertions()
+{
+  // AND guards
+  for(auto a : mut_input_symbols)
+  {
+    if(a.second.size() <= 1)
+      continue;
+
+    INVARIANT(a.second.size() == 2,
+        "Merging of more than two versions not supported yet");
+
+    mut_symbolt &s1 = a.second.front();
+    mut_symbolt &s2 = a.second.back();
+    and_exprt   guard(s1.guard, s2.guard);
+    equal_exprt cond(s1.symbol, s2.symbol);
+    symex_target_equationt::assumption(guard, cond, s1.source);
+  }
+
+  for(auto a : mut_output_symbols)
+  {
+    if(a.second.size() <= 1)
+      continue; // ToDo warn?
+
+    INVARIANT(a.second.size() == 2,
+        "Merging of more than two versions not supported yet");
+
+    mut_symbolt &s1 = a.second.front();
+    mut_symbolt &s2 = a.second.back();
+    and_exprt   guard(s1.guard, s2.guard);
+    equal_exprt cond(s1.symbol, s2.symbol);
+    irep_idt    property_id=s1.source.pc->source_location.get_property_id();
+    symex_target_equationt::assertion(guard, cond, id2string(property_id), s1.source);
+  }
+}
+
+// record mutation input/outputs
+void symex_target_merge_equationt::mut_input(
+    const exprt &guard,
+    const ssa_exprt symbol,
+    const sourcet &source)
+{
+  // no need to specify input before mutation
+  if(prefix == NO_PREFIX)
+    return;
+
+  irep_idt property_id=source.pc->source_location.get_property_id();
+  INVARIANT(property_id != "", "property_id of mut output must not be empty");
+
+  mut_input_symbols[property_id].push_back(mut_symbolt());
+  mut_symbolt &mut_info=mut_input_symbols[property_id].back();
+
+  mut_info.guard = guard;
+  mut_info.source = source;
+  mut_info.symbol = symbol;
+
+  ssa_renamingst new_ren;
+  check(new_ren, mut_info.guard);
+  check(new_ren, mut_info.symbol);
+  perform_renamings(source, new_ren);
+
+  //std::cout << " >> Input " << symbol.get_identifier() << " " << property_id <<  std::endl;
+}
+
+void symex_target_merge_equationt::mut_output(
+    const exprt &guard,
+    const ssa_exprt symbol,
+    const sourcet &source)
+{
+  // cannot fail for instructions before the mutation
+  if(prefix == NO_PREFIX)
+    return;
+
+  irep_idt property_id=source.pc->source_location.get_property_id();
+  INVARIANT(property_id != "", "property_id of mut output must not be empty");
+
+  mut_output_symbols[property_id].push_back(mut_symbolt());
+  mut_symbolt &mut_info=mut_output_symbols[property_id].back();
+
+  mut_info.guard = guard;
+  mut_info.source = source;
+  mut_info.symbol = symbol;
+
+  ssa_renamingst new_ren;
+  check(new_ren, mut_info.guard);
+  check(new_ren, mut_info.symbol);
+  perform_renamings(source, new_ren);
+
+  //std::cout << " >> Output " << symbol.get_identifier() << " " << property_id << std::endl;
+}
+
 
 //
-// delegates for ssa_exprt renaming, they call will call the functions 
-// they're overloading
+// delegates for ssa_exprt renaming, they call the functions they're overloading
 //
 
 /// read from a shared variable

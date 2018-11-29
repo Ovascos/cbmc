@@ -185,6 +185,16 @@ public:
     const exprt &guard,
     unsigned atomic_section_id,
     const sourcet &source)=0;
+
+  // record mutation input/outputs
+  virtual void mut_input(
+      const exprt &guard,
+      const ssa_exprt symbol,
+      const sourcet &source)=0;
+  virtual void mut_output(
+      const exprt &guard,
+      const ssa_exprt symbol,
+      const sourcet &source)=0;
 };
 
 bool operator < (

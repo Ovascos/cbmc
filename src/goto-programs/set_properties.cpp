@@ -52,7 +52,7 @@ void label_properties(
       it!=goto_program.instructions.end();
       it++)
   {
-    if(!it->is_assert())
+    if(!(it->is_assert() || it->is_mut_input() || it->is_mut_output()))
       continue;
 
     irep_idt function=it->source_location.get_function();

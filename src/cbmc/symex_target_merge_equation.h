@@ -1,6 +1,7 @@
 #ifndef CPROVER_CBMC_SYMEX_TARGET_MERGE_EQUATION_H
 #define CPROVER_CBMC_SYMEX_TARGET_MERGE_EQUATION_H
 
+#include <list>
 #include <unordered_map>
 #include <unordered_set>
 #include <goto-symex/symex_target_equation.h>
@@ -9,9 +10,15 @@ class symex_target_merge_equationt : public symex_target_equationt
 {
 public:
   typedef int prefixt;
+
+  // types for renaming
   typedef std::unordered_map<irep_idt, ssa_exprt> ssa_symbolst;
   typedef std::unordered_set<irep_idt> ssa_renamingst;
   typedef std::unordered_map<prefixt, ssa_renamingst> ssa_prefix_renamingst;
+
+  // types for asserts and assumes
+  typedef struct {exprt guard; ssa_exprt symbol; sourcet source;} mut_symbolt;
+  typedef std::unordered_map<irep_idt, std::list<mut_symbolt>> mut_symbolst;
 
   enum { NO_PREFIX = -1 };
 
@@ -22,6 +29,7 @@ public:
   { }
 
   void set_prefix(int prefix);
+  void insert_mutation_assertions();
 
 protected:
   int prefix;
@@ -32,10 +40,14 @@ protected:
   /// They are stored without prefix.
   ssa_prefix_renamingst ssa_renamings;
 
+  /// stores a set of ssa_exprt by property_id for mutation inputs
+  mut_symbolst mut_input_symbols;
+  /// stores a set of ssa_exprt by property_id for mutation outputs
+  mut_symbolst mut_output_symbols;
+
   void rename(SSA_stept &step);
   void check(ssa_renamingst &renamings, exprt &ex);
-  void perform_renamings(ssa_renamingst &renamings);
-  void perform_renamings(const SSA_stept &, const ssa_renamingst &);
+  void perform_renamings(const sourcet &, const ssa_renamingst &);
   void add_equal_assumption(const ssa_exprt &ex, const sourcet &source);
 
 private:
@@ -168,6 +180,16 @@ public:
     const exprt &guard,
     unsigned atomic_section_id,
     const sourcet &source);
+
+  // record mutation input/outputs
+  virtual void mut_input(
+      const exprt &guard,
+      const ssa_exprt symbol,
+      const sourcet &source);
+  virtual void mut_output(
+      const exprt &guard,
+      const ssa_exprt symbol,
+      const sourcet &source);
 };
 
 #endif // CPROVER_CBMC_SYMEX_TARGET_MERGE_EQUATION_H

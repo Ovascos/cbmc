@@ -79,7 +79,7 @@ void mutatort::analyze(goto_functionst &goto_functions)
     analyze(it->second.body);
 }
 
-// ToDo check with all true mutation (somehow there'r non-file location instructions
+// ToDo check with all true mutation (somehow there are non-file location instructions)
 
 void mutatort::analyze(goto_programt &goto_program)
 {
@@ -107,9 +107,6 @@ void mutatort::analyze(goto_programt &goto_program)
 
       case ASSUME:
       case ASSERT:
-        // ToDo mutate assert and assume?
-        break;
-
       case SKIP:
       case DEAD:
       case LOCATION:

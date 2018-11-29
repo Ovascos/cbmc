@@ -374,6 +374,23 @@ void symex_target_equationt::constraint(
   merge_ireps(SSA_step);
 }
 
+// record mutation input/outputs
+void symex_target_equationt::mut_input(
+    const exprt &guard,
+    const ssa_exprt symbol,
+    const sourcet &source)
+{
+  // for mutation testing, a proper subclass has to be used
+}
+
+void symex_target_equationt::mut_output(
+    const exprt &guard,
+    const ssa_exprt symbol,
+    const sourcet &source)
+{
+  // for mutation testing, a proper subclass has to be used
+}
+
 void symex_target_equationt::convert(
   prop_convt &prop_conv)
 {

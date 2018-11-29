@@ -156,6 +156,16 @@ public:
     unsigned atomic_section_id,
     const sourcet &source);
 
+  // record mutation input/outputs
+  virtual void mut_input(
+      const exprt &guard,
+      const ssa_exprt symbol,
+      const sourcet &source);
+  virtual void mut_output(
+      const exprt &guard,
+      const ssa_exprt symbol,
+      const sourcet &source);
+
   void convert(prop_convt &prop_conv);
   void convert_assignments(decision_proceduret &decision_procedure) const;
   void convert_decls(prop_convt &prop_conv) const;

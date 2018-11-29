@@ -403,6 +403,10 @@ protected:
   void symex_throw(statet &);
   void symex_catch(statet &);
 
+  // mutation
+  void symex_mut_input(statet &, symbol_exprt &);
+  void symex_mut_output(statet &, symbol_exprt &);
+
   virtual void do_simplify(exprt &);
 
   void symex_assign(statet &, const code_assignt &);

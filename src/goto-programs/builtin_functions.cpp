@@ -771,6 +771,11 @@ void goto_convertt::do_function_call_symbol(
     goto_programt::targett t=dest.add_instruction(is_input ? MUT_INPUT : MUT_OUTPUT);
     t->guard=arguments[0];
     t->source_location=function.source_location();
+    t->source_location.set("user-provided", true);
+    t->source_location.set_property_class(is_input ? ID_mutation_input : ID_mutation_output);
+    t->source_location.set_comment(
+      (is_input ? "mutation input " : "mutation output ")
+      + id2string(from_expr(ns, identifier, t->guard)));
 
     if(lhs.is_not_nil())
     {
