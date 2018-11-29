@@ -3,6 +3,7 @@
 #include <util/expr.h>
 #include <util/ssa_expr.h>
 #include <util/std_expr.h>
+#include <util/guard.h>
 #include <util/invariant.h>
 
 #include <unordered_set>
@@ -117,7 +118,6 @@ void symex_target_merge_equationt::set_prefix(int _prefix)
 
 void symex_target_merge_equationt::insert_mutation_assertions()
 {
-  // AND guards
   for(auto a : mut_input_symbols)
   {
     if(a.second.size() <= 1)
@@ -128,8 +128,12 @@ void symex_target_merge_equationt::insert_mutation_assertions()
 
     mut_symbolt &s1 = a.second.front();
     mut_symbolt &s2 = a.second.back();
-    and_exprt   guard(s1.guard, s2.guard);
     equal_exprt cond(s1.symbol, s2.symbol);
+    guardt      guard;
+    guard.add(s1.guard);
+    guard.add(s2.guard);
+    guard.guard_expr(cond);
+
     symex_target_equationt::assumption(guard, cond, s1.source);
   }
 
@@ -143,9 +147,13 @@ void symex_target_merge_equationt::insert_mutation_assertions()
 
     mut_symbolt &s1 = a.second.front();
     mut_symbolt &s2 = a.second.back();
-    and_exprt   guard(s1.guard, s2.guard);
-    equal_exprt cond(s1.symbol, s2.symbol);
     irep_idt    property_id=s1.source.pc->source_location.get_property_id();
+    equal_exprt cond(s1.symbol, s2.symbol);
+    guardt      guard;
+    guard.add(s1.guard);
+    guard.add(s2.guard);
+    guard.guard_expr(cond);
+
     symex_target_equationt::assertion(guard, cond, id2string(property_id), s1.source);
   }
 }

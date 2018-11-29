@@ -60,7 +60,7 @@ safety_checkert::resultt bmc_all_propertiest::operator()()
   // This maps property IDs to 'goalt'
   forall_goto_functions(f_it, goto_functions)
     forall_goto_program_instructions(i_it, f_it->second.body)
-      if(i_it->is_assert())
+      if(i_it->is_assert() || i_it->is_mut_output())
         goal_map[i_it->source_location.get_property_id()]=goalt(*i_it);
 
   // get the conditions for these goals from formula
@@ -74,7 +74,7 @@ safety_checkert::resultt bmc_all_propertiest::operator()()
     {
       irep_idt property_id;
 
-      if(it->source.pc->is_assert())
+      if(it->source.pc->is_assert() || it->source.pc->is_mut_output())
         property_id=it->source.pc->source_location.get_property_id();
       else if(it->source.pc->is_goto())
       {
@@ -85,7 +85,6 @@ safety_checkert::resultt bmc_all_propertiest::operator()()
         goal_map[property_id].description=it->comment;
       }
       else
-        // ToDo handle Mutation assertions
         continue;
 
       goal_map[property_id].instances.push_back(it);

@@ -280,7 +280,7 @@ safety_checkert::resultt checkert::solve(
 
     // any properties to check at all?
     if(!options.get_bool_option("program-only") &&
-       symex.remaining_vccs==0)
+       equation.count_assertions() == 0)
     {
       report_success();
       output_graphml(resultt::SAFE);
