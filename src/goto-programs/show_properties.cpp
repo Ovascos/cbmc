@@ -34,7 +34,7 @@ optionalt<source_locationt> find_property(
 
     for(const auto &ins : goto_program.instructions)
     {
-      if(ins.is_assert())
+      if(ins.is_assert() || ins.is_mut_output())
       {
         if(ins.source_location.get_property_id() == property)
         {
@@ -56,7 +56,7 @@ void show_properties(
   messaget msg(message_handler);
   for(const auto &ins : goto_program.instructions)
   {
-    if(!ins.is_assert())
+    if(!(ins.is_assert() || ins.is_mut_output()))
       continue;
 
     const source_locationt &source_location=ins.source_location;
@@ -116,7 +116,7 @@ void convert_properties_json(
 {
   for(const auto &ins : goto_program.instructions)
   {
-    if(!ins.is_assert())
+    if(!(ins.is_assert() || ins.is_mut_output()))
       continue;
 
     const source_locationt &source_location=ins.source_location;
