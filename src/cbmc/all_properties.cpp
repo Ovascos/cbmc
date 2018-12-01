@@ -142,10 +142,18 @@ safety_checkert::resultt bmc_all_propertiest::operator()()
 
   bool safe=(cover_goals.number_covered()==0);
 
+  checkert::failed_propst failed_props;
+  for(const auto &goal_pair : goal_map)
+    if(goal_pair.second.status==goalt::statust::FAILURE)
+      failed_props.push_back(goal_pair.first);
+
+  //INVARIANT(failed_props.size() == cover_goals.number_covered(),
+  //    "failed props and covered goals don't match");
+
   if(safe)
-    bmc.report_success(); // legacy, might go away
+    bmc.report_success();
   else
-    bmc.report_failure(); // legacy, might go away
+    bmc.report_failure(failed_props);
 
   return safe?safety_checkert::resultt::SAFE:safety_checkert::resultt::UNSAFE;
 }

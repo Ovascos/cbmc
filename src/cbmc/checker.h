@@ -1,6 +1,8 @@
 #ifndef CPROVER_CBMC_CHECKER_H
 #define CPROVER_CBMC_CHECKER_H
 
+#include <list>
+
 #include <util/options.h>
 #include <util/ui_message.h>
 #include <util/decision_procedure.h>
@@ -125,8 +127,11 @@ protected:
     const goto_functionst &goto_functions,
     prop_convt &solver);
   virtual resultt stop_on_fail(prop_convt &solver);
+
+  typedef std::list<irep_idt> failed_propst;
   virtual void report_success();
   virtual void report_failure();
+  virtual void report_failure(const failed_propst &) { report_failure(); };
 
   virtual void error_trace();
   void output_graphml(resultt result);

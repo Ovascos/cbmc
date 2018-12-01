@@ -49,6 +49,7 @@ protected:
 
   virtual void report_success() override;
   virtual void report_failure() override;
+  virtual void report_failure(const failed_propst &) override;
 
 private:
   void perform_symbolic_execution(goto_symext::get_goto_functiont get_goto_function) override;
