@@ -91,6 +91,12 @@ safety_checkert::resultt bmc_all_propertiest::operator()()
     }
   }
 
+  for(auto it = goal_map.begin(); it != goal_map.end(); )
+    if(it->second.instances.size() == 0)
+      it=goal_map.erase(it);
+    else
+      it++;
+
   do_before_solving();
 
   cover_goalst cover_goals(solver);

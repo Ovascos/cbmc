@@ -48,7 +48,6 @@ protected:
   symex_target_merge_equationt equation;
 
   virtual void report_success() override;
-  virtual void report_failure() override;
   virtual void report_failure(const failed_propst &) override;
 
 private:

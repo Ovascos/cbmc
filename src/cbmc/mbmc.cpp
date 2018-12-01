@@ -127,38 +127,31 @@ int mbmct::do_mbmc(
 
 void mbmct::report_success() {
   checkert::report_success();
-  std::cout << "NO MUTATIONS KILLED" << std::endl;
-}
-
-// ToDo check if failed assertion(s) had been added by user program or mbmc
-void mbmct::report_failure() {
-  checkert::report_failure();
-  std::cout << "OR MUTATION KILLED" << std::endl;
+  std::cout << "MUTATION KILLED" << std::endl;
 }
 
 void mbmct::report_failure(const failed_propst &failed) {
   bool assertion_failed = false;
-  bool mutation_killed = false;
+  bool mutation_failed = false;
 
   for(const irep_idt &id : failed)
   {
-    bool kill =
+    bool mut =
       std::string(id.c_str()).find(ID_mutation_output.c_str())!=std::string::npos;
     bool assert =
       std::string(id.c_str()).find(ID_assertion.c_str())!=std::string::npos;
 
-    INVARIANT(kill || assert, "invalid prop id");
-    mutation_killed |= kill;
+    INVARIANT(mut || assert, "invalid prop id");
+    mutation_failed |= mut;
     assertion_failed |= assert;
   }
 
-  if(assertion_failed && mutation_killed)
-    std::cout << "VERIFICATION FAILED" << std::endl
-              << "AND MUTATIONS KILLED" << std::endl;
-  else if(assertion_failed)
+  if(assertion_failed)
     std::cout << "VERIFICATION FAILED" << std::endl;
-  else if(mutation_killed)
-    std::cout << "MUTATION KILLED" << std::endl;
   else
-    UNREACHABLE;
+    std::cout << "VERIFICATION SUCCESSFULL" << std::endl;
+  if(mutation_failed)
+    std::cout << "MUTATIONS NOT KILLED" << std::endl;
+  else
+    std::cout << "MUTATIONS KILLED" << std::endl;
 }
