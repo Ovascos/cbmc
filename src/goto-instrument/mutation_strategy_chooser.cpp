@@ -88,11 +88,16 @@ mutation_strategy_choosert::mutation_strategy_choosert()
          []() { // NOLINT(whitespace/braces)
            return mutationt::factory(LESS_EQUAL_TO_UNEQUAL);
          }}},
-       {"rm-plus1",
-        {" rm-plus1            removes plus 1, i.e. replaces(x + 1) with (x)\n",
-         []() { // NOLINT(whitespace/braces)
-           return mutationt::factory(PLUS_ONE_REMOVE);
-         }}}
+      {"rm-plus1",
+       {" rm-plus1            removes plus 1, i.e. replaces(x + 1) with (x)\n",
+        []() { // NOLINT(whitespace/braces)
+          return mutationt::factory(PLUS_ONE_REMOVE);
+        }}},
+      {"mul2-2-shift",
+       {" mul2-2-shift        changes multiply by 2 (x*2) with shift (x<<1)\n",
+        []() { // NOLINT(whitespace/braces)
+          return mutationt::factory(MUL2_TO_SHIFT);
+        }}}
     })
 {
 }

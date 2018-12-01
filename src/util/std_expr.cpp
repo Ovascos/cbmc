@@ -11,6 +11,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/namespace.h>
 
 #include <cassert>
+#include <bitset>
 
 #include "arith_tools.h"
 #include "byte_operators.h"
@@ -30,6 +31,23 @@ bool constant_exprt::value_is_one_string() const
   return pos!=std::string::npos &&
          val[pos]=='1' &&
          pos==val.length()-1;
+}
+
+bool constant_exprt::value_is_n_string(int n) const
+{
+  static const int bitwidth = sizeof(int)*8;
+  const std::bitset<bitwidth> bs(n);
+  const std::string val=id2string(get_value());
+  bool last_bit = bs[0];
+  size_t pos = 0;
+  for(auto it = val.crbegin(); it!=val.crend(); ++it, ++pos)
+  {
+    bool test = (pos < bitwidth) ? bs[pos] : last_bit;
+    if(test != (*it == '1'))
+      return false;
+    last_bit = test;
+  }
+  return true;
 }
 
 exprt disjunction(const exprt::operandst &op)
