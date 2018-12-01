@@ -101,16 +101,14 @@ void goto_symext::symex_assume(statet &state, const exprt &cond)
     symex_atomic_end(state);
 }
 
-void goto_symext::symex_mut_input(statet &state, symbol_exprt &symbol)
+void goto_symext::symex_mut_input(statet &state, exprt &expr)
 {
-  PRECONDITION(is_ssa_expr(symbol));
-  target.mut_input(state.guard.as_expr(), to_ssa_expr(symbol), state.source);
+  target.mut_input(state.guard.as_expr(), expr, state.source);
 }
 
-void goto_symext::symex_mut_output(statet &state, symbol_exprt &symbol)
+void goto_symext::symex_mut_output(statet &state, exprt &expr)
 {
-  PRECONDITION(is_ssa_expr(symbol));
-  target.mut_output(state.guard.as_expr(), to_ssa_expr(symbol), state.source);
+  target.mut_output(state.guard.as_expr(), expr, state.source);
 }
 
 void goto_symext::rewrite_quantifiers(exprt &expr, statet &state)
@@ -510,7 +508,9 @@ void goto_symext::symex_step(
     {
       INVARIANT(can_cast_expr<symbol_exprt>(instruction.guard),
           "guard of MUT_INPUT must be a symbol_exprt");
-      symbol_exprt tmp = to_symbol_expr(instruction.guard);
+
+      // rename may produce constant_exprt
+      exprt tmp = instruction.guard;
       state.rename(tmp, ns);
       symex_mut_input(state, tmp);
     }
@@ -522,7 +522,9 @@ void goto_symext::symex_step(
     {
       INVARIANT(can_cast_expr<symbol_exprt>(instruction.guard),
           "guard of MUT_OUTPUT must be a symbol_exprt");
-      symbol_exprt tmp = to_symbol_expr(instruction.guard);
+
+      // rename may produce constant_exprt
+      exprt tmp = instruction.guard;
       state.rename(tmp, ns);
       symex_mut_output(state, tmp);
     }

@@ -377,7 +377,7 @@ void symex_target_equationt::constraint(
 // record mutation input/outputs
 void symex_target_equationt::mut_input(
     const exprt &guard,
-    const ssa_exprt symbol,
+    const exprt &symbol,
     const sourcet &source)
 {
   // for mutation testing, a proper subclass has to be used
@@ -385,7 +385,7 @@ void symex_target_equationt::mut_input(
 
 void symex_target_equationt::mut_output(
     const exprt &guard,
-    const ssa_exprt symbol,
+    const exprt &symbol,
     const sourcet &source)
 {
   // for mutation testing, a proper subclass has to be used

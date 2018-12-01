@@ -17,7 +17,7 @@ public:
   typedef std::unordered_map<prefixt, ssa_renamingst> ssa_prefix_renamingst;
 
   // types for asserts and assumes
-  typedef struct {exprt guard; ssa_exprt symbol; sourcet source;} mut_symbolt;
+  typedef struct { exprt guard; exprt symbol; sourcet source; } mut_symbolt;
   typedef std::unordered_map<irep_idt, std::list<mut_symbolt>> mut_symbolst;
 
   enum { NO_PREFIX = -1 };
@@ -184,11 +184,11 @@ public:
   // record mutation input/outputs
   virtual void mut_input(
       const exprt &guard,
-      const ssa_exprt symbol,
+      const exprt &symbol,
       const sourcet &source);
   virtual void mut_output(
       const exprt &guard,
-      const ssa_exprt symbol,
+      const exprt &symbol,
       const sourcet &source);
 };
 

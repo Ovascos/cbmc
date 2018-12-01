@@ -161,9 +161,11 @@ void symex_target_merge_equationt::insert_mutation_assertions()
 // record mutation input/outputs
 void symex_target_merge_equationt::mut_input(
     const exprt &guard,
-    const ssa_exprt symbol,
+    const exprt &symbol,
     const sourcet &source)
 {
+  PRECONDITION(is_ssa_expr(symbol) || can_cast_expr<constant_exprt>(symbol));
+
   // no need to specify input before mutation
   if(prefix == NO_PREFIX)
     return;
@@ -182,15 +184,15 @@ void symex_target_merge_equationt::mut_input(
   check(new_ren, mut_info.guard);
   check(new_ren, mut_info.symbol);
   perform_renamings(source, new_ren);
-
-  //std::cout << " >> Input " << symbol.get_identifier() << " " << property_id <<  std::endl;
 }
 
 void symex_target_merge_equationt::mut_output(
     const exprt &guard,
-    const ssa_exprt symbol,
+    const exprt &symbol,
     const sourcet &source)
 {
+  PRECONDITION(is_ssa_expr(symbol) || can_cast_expr<constant_exprt>(symbol));
+
   // cannot fail for instructions before the mutation
   if(prefix == NO_PREFIX)
     return;
@@ -209,8 +211,6 @@ void symex_target_merge_equationt::mut_output(
   check(new_ren, mut_info.guard);
   check(new_ren, mut_info.symbol);
   perform_renamings(source, new_ren);
-
-  //std::cout << " >> Output " << symbol.get_identifier() << " " << property_id << std::endl;
 }
 
 
