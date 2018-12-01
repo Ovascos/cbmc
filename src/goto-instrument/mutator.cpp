@@ -35,7 +35,13 @@ void mutatort::mutate(unsigned id)
   mutation->mutate_expr(*(mutation_locations[id].expr));
 }
 
-goto_programt::const_targett mutatort::get_instruction(unsigned id) const {
+bool mutatort::location_id_valid(unsigned id) const
+{
+  return id < mutation_locations.size();
+}
+
+goto_programt::const_targett mutatort::get_instruction(unsigned id) const
+{
   INVARIANT(id < mutation_locations.size(),
       "invlid mutation id int mutate() call");
   return mutation_locations[id].instr;

@@ -33,6 +33,9 @@ void mbmct::perform_symbolic_execution(
 {
   unsigned mut_id = options.get_unsigned_int_option("mutation-location");
 
+  if(!mutator.location_id_valid(mut_id))
+    throw "Mutation location not found.";
+
   goto_symex_statet state;
   symex.symex_until_instruction(state, get_goto_function, mutator.get_instruction(mut_id));
 

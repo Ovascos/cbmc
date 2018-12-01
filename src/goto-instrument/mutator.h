@@ -39,6 +39,7 @@ public:
   void show_location_ids(ui_message_handlert::uit) const;
 
   void mutate(unsigned id);
+  bool location_id_valid(unsigned id) const;
   goto_programt::const_targett get_instruction(unsigned id) const;
 
 protected:
