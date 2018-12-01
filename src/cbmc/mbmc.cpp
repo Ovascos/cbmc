@@ -128,12 +128,19 @@ int mbmct::do_mbmc(
   UNREACHABLE;
 }
 
-void mbmct::report_success() {
+void mbmct::report_success()
+{
   checkert::report_success();
   std::cout << "MUTATION KILLED" << std::endl;
 }
 
-void mbmct::report_failure(const failed_propst &failed) {
+void mbmct::report_failure()
+{
+  std::cout << "VERIFICATION FAILED OR MUTATION NOT KILLED" << std::endl;
+}
+
+void mbmct::report_failure(const failed_propst &failed)
+{
   bool assertion_failed = false;
   bool mutation_failed = false;
 
