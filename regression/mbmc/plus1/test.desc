@@ -1,0 +1,9 @@
+CORE mbmc
+main.c
+--mutator rm-plus1 --mutate 0
+^EXIT=10$
+^SIGNAL=0$
+^VERIFICATION SUCCESSFUL$
+^MUTATION NOT KILLED$
+--
+^warning: ignoring

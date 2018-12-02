@@ -159,7 +159,7 @@ void mbmct::report_failure(const failed_propst &failed)
   if(assertion_failed)
     std::cout << "VERIFICATION FAILED" << std::endl;
   else
-    std::cout << "VERIFICATION SUCCESSFULL" << std::endl;
+    std::cout << "VERIFICATION SUCCESSFUL" << std::endl;
   if(mutation_failed)
     std::cout << "MUTATION NOT KILLED" << std::endl;
   else
