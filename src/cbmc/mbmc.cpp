@@ -161,7 +161,7 @@ void mbmct::report_failure(const failed_propst &failed)
   else
     std::cout << "VERIFICATION SUCCESSFULL" << std::endl;
   if(mutation_failed)
-    std::cout << "MUTATIONS NOT KILLED" << std::endl;
+    std::cout << "MUTATION NOT KILLED" << std::endl;
   else
-    std::cout << "MUTATIONS KILLED" << std::endl;
+    std::cout << "MUTATION KILLED" << std::endl;
 }

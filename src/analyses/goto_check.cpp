@@ -66,6 +66,7 @@ public:
     retain_trivial=_options.get_bool_option("retain-trivial");
     enable_assert_to_assume=_options.get_bool_option("assert-to-assume");
     enable_assertions=_options.get_bool_option("assertions");
+    enable_mutations=_options.get_bool_option("mutate");
     enable_built_in_assertions=_options.get_bool_option("built-in-assertions");
     enable_assumptions=_options.get_bool_option("assumptions");
     error_labels=_options.get_list_option("error-label");
@@ -146,6 +147,7 @@ protected:
   bool retain_trivial;
   bool enable_assert_to_assume;
   bool enable_assertions;
+  bool enable_mutations;
   bool enable_built_in_assertions;
   bool enable_assumptions;
 
@@ -1668,6 +1670,14 @@ void goto_checkt::goto_check(
 
       // this has no successor
       assertions.clear();
+    }
+    else if(i.is_mut_output() || i.is_mut_input())
+    {
+      if(!enable_mutations)
+      {
+        i.make_skip();
+        did_something = true;
+      }
     }
     else if(i.is_assert())
     {
