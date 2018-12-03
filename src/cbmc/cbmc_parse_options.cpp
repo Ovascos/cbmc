@@ -126,6 +126,13 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
     exit(CPROVER_EXIT_USAGE_ERROR);
   }
 
+  if(!cmdline.isset("partial-loops") && cmdline.isset("mutate"))
+  {
+    warning() << "WARNING: --mutate without --partial-loops given. For mutation "
+              << "testing enabling --partial-loops is strongly recommended to "
+              << "avoid false-positives." << eom;
+  }
+
   if(cmdline.isset("reachability-slice") &&
      cmdline.isset("reachability-slice-fb"))
   {

@@ -148,12 +148,8 @@ void mbmct::report_failure(const failed_propst &failed)
   {
     bool mut =
       std::string(id.c_str()).find(ID_mutation_output.c_str())!=std::string::npos;
-    bool assert =
-      std::string(id.c_str()).find(ID_assertion.c_str())!=std::string::npos;
-
-    INVARIANT(mut || assert, "invalid prop id");
     mutation_failed |= mut;
-    assertion_failed |= assert;
+    assertion_failed |= !mut;
   }
 
   if(assertion_failed)
