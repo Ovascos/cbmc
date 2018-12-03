@@ -1,0 +1,9 @@
+CORE mbmc
+main.c
+--unwind 12 --mutator rm-plus1 --mutate 0 --partial-loops
+^EXIT=10$
+^SIGNAL=0$
+^VERIFICATION SUCCESSFUL$
+^MUTATION NOT KILLED$
+--
+^warning: ignoring

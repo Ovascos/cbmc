@@ -1,0 +1,9 @@
+CORE mbmc
+main.c
+--partial-loops --unwind 7 --mutator mul2-2-shift --mutate 0
+^EXIT=0$
+^SIGNAL=0$
+^VERIFICATION SUCCESSFUL$
+^MUTATION KILLED$
+--
+^warning: ignoring
