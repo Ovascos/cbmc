@@ -88,6 +88,23 @@ struct mutation_mul2_shift : public mutationt
   }
 };
 
+struct mutation_eq_uneq : public mutationt
+{
+  bool mutate_expr(exprt& ex) const override
+  {
+    INVARIANT(check_expr(ex), "invalid exprt passed");
+    ex = not_exprt(equal_exprt(ex.op0(), ex.op1()));
+    return true;
+  }
+
+  bool check_expr(const exprt& ex) const override
+  {
+    CHECK(ex.id() == ID_equal);
+    CHECK(has_n_op(ex, 2));
+    return true;
+  }
+};
+
 std::unique_ptr<mutationt> mutationt::factory(mutation_typet type)
 {
   switch(type)
@@ -100,6 +117,8 @@ std::unique_ptr<mutationt> mutationt::factory(mutation_typet type)
       return std::unique_ptr<mutationt>(new mutation_plust);
     case MUL2_TO_SHIFT:
       return std::unique_ptr<mutationt>(new mutation_mul2_shift);
+    case EQ_TO_UNEQ:
+      return std::unique_ptr<mutationt>(new mutation_eq_uneq);
     default:
       UNREACHABLE;
   }

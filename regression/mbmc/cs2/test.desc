@@ -1,0 +1,9 @@
+CORE mbmc
+main.c
+--unwind 3 --mutator rm-plus1 --mutate 0 --no-assertions
+^EXIT=10$
+^SIGNAL=0$
+^VERIFICATION SUCCESSFUL$
+^MUTANT KILLED$
+--
+^warning: ignoring

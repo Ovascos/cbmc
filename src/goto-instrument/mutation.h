@@ -15,7 +15,8 @@ enum mutation_typet
   NOOP,
   LESS_EQUAL_TO_UNEQUAL,
   PLUS_ONE_REMOVE,
-  MUL2_TO_SHIFT
+  MUL2_TO_SHIFT,
+  EQ_TO_UNEQ
 };
 
 struct mutationt

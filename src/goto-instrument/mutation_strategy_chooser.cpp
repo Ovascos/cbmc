@@ -97,6 +97,11 @@ mutation_strategy_choosert::mutation_strategy_choosert()
        {" mul2-2-shift        changes multiply by 2 (x*2) with shift (x<<1)\n",
         []() { // NOLINT(whitespace/braces)
           return mutationt::factory(MUL2_TO_SHIFT);
+        }}},
+      {"eq-2-uneq",
+       {" eq-2-uneq           changes equality (==) with unequality (!=)\n",
+        []() { // NOLINT(whitespace/braces)
+          return mutationt::factory(EQ_TO_UNEQ);
         }}}
     })
 {
