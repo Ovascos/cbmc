@@ -17,8 +17,9 @@ public:
   typedef std::unordered_map<prefixt, ssa_renamingst> ssa_prefix_renamingst;
 
   // types for asserts and assumes
-  typedef struct { exprt guard; exprt symbol; sourcet source; } mut_symbolt;
-  typedef std::unordered_map<irep_idt, std::list<mut_symbolt>> mut_symbolst;
+  typedef struct { exprt guard; exprt symbol; sourcet source; } mut_iot;
+  typedef std::list<mut_iot> mut_iost;
+  typedef std::unordered_map<irep_idt, std::map<int, mut_iost>> mut_io_mapt;
 
   enum { NO_PREFIX = -1 };
 
@@ -41,9 +42,9 @@ protected:
   ssa_prefix_renamingst ssa_renamings;
 
   /// stores a set of ssa_exprt by property_id for mutation inputs
-  mut_symbolst mut_input_symbols;
+  mut_io_mapt mut_input_map;
   /// stores a set of ssa_exprt by property_id for mutation outputs
-  mut_symbolst mut_output_symbols;
+  mut_io_mapt mut_output_map;
 
   void rename(SSA_stept &step);
   void check(ssa_renamingst &renamings, exprt &ex);

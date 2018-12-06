@@ -45,7 +45,6 @@ struct symex_target_merge_equationt::ssa_rename_visitort
   }
 };
 
-// ToDo perform bettern renaming (no assumes)
 void symex_target_merge_equationt::check(ssa_renamingst &renamings, exprt &ex)
 {
   if(ex.is_nil())
@@ -118,43 +117,80 @@ void symex_target_merge_equationt::set_prefix(int _prefix)
 
 void symex_target_merge_equationt::insert_mutation_assertions()
 {
-  for(auto a : mut_input_symbols)
+  const mut_iost empty_list;
+  
+  for(auto a : mut_input_map)
   {
-    if(a.second.size() <= 1)
+    const std::map<int, mut_iost>& lists = a.second;
+    if(lists.size() == 0)
       continue;
 
-    INVARIANT(a.second.size() == 2,
+    auto it = lists.cbegin();
+    const mut_iost &l1 = (it++)->second;
+    const mut_iost &l2 = (it == lists.cend()) ? empty_list : (it++)->second;
+    INVARIANT(it == lists.cend(),
         "Merging of more than two versions not supported yet");
+    
+    mut_iost::const_iterator it1 = l1.cbegin();
+    mut_iost::const_iterator it2 = l2.cbegin();
+    while(it1 != l1.cend() && it2 != l2.cend())
+    {
+      equal_exprt cond(it1->symbol, it2->symbol);
+      guardt      guard;
+      guard.add(it1->guard);
+      guard.add(it2->guard);
+      guard.guard_expr(cond);
 
-    mut_symbolt &s1 = a.second.front();
-    mut_symbolt &s2 = a.second.back();
-    equal_exprt cond(s1.symbol, s2.symbol);
-    guardt      guard;
-    guard.add(s1.guard);
-    guard.add(s2.guard);
-    guard.guard_expr(cond);
+      symex_target_equationt::assumption(guard, cond, it1->source);
 
-    symex_target_equationt::assumption(guard, cond, s1.source);
+      it1++;
+      it2++;
+    }
   }
 
-  for(auto a : mut_output_symbols)
+  for(auto a : mut_output_map)
   {
-    if(a.second.size() <= 1)
-      continue; // ToDo warn?
+    const std::map<int, mut_iost>& lists = a.second;
+    if(lists.size() == 0)
+      continue;
 
-    INVARIANT(a.second.size() == 2,
+    INVARIANT(lists.size() <= 2,
         "Merging of more than two versions not supported yet");
 
-    mut_symbolt &s1 = a.second.front();
-    mut_symbolt &s2 = a.second.back();
-    irep_idt    property_id=s1.source.pc->source_location.get_property_id();
-    equal_exprt cond(s1.symbol, s2.symbol);
-    guardt      guard;
-    guard.add(s1.guard);
-    guard.add(s2.guard);
-    guard.guard_expr(cond);
+    auto it = lists.cbegin();
+    const mut_iost &la = (it++)->second;
+    const mut_iost &lb = (it == lists.cend()) ? empty_list : (it++)->second;
+    INVARIANT(it == lists.cend(),
+        "Merging of more than two versions not supported yet");
 
-    symex_target_equationt::assertion(guard, cond, id2string(property_id), s1.source);
+    bool swap = la.size() < lb.size();
+    const mut_iost &l1 = !swap ? la : lb;
+    const mut_iost &l2 = !swap ? lb : la;
+    INVARIANT(l1.size() >= l2.size(), "List size issues");
+
+    mut_iost::const_iterator it1 = l1.cbegin();
+    mut_iost::const_iterator it2 = l2.cbegin();
+    while(it1 != l1.cend())
+    {
+      irep_idt    property_id=it1->source.pc->source_location.get_property_id();
+      exprt       ex;
+
+      if(it2 != l2.cend())
+      {
+        or_exprt    guards_or(it1->guard, it2->guard);
+        and_exprt   guards_and(it1->guard, it2->guard);
+        equal_exprt cond_eq(it1->symbol, it2->symbol);
+        ex = implies_exprt(guards_or, and_exprt(guards_and, cond_eq));
+        it2++;
+      }
+      else
+      {
+        ex = not_exprt(it1->guard); 
+      }
+
+      symex_target_equationt::assertion(true_exprt(), ex, id2string(property_id), it1->source);
+      it1++;
+    }
   }
 }
 
@@ -173,8 +209,8 @@ void symex_target_merge_equationt::mut_input(
   irep_idt property_id=source.pc->source_location.get_property_id();
   INVARIANT(property_id != "", "property_id of mut output must not be empty");
 
-  mut_input_symbols[property_id].push_back(mut_symbolt());
-  mut_symbolt &mut_info=mut_input_symbols[property_id].back();
+  mut_input_map[property_id][prefix].push_back(mut_iot());
+  mut_iot &mut_info=mut_input_map[property_id][prefix].back();
 
   mut_info.guard = guard;
   mut_info.source = source;
@@ -200,8 +236,8 @@ void symex_target_merge_equationt::mut_output(
   irep_idt property_id=source.pc->source_location.get_property_id();
   INVARIANT(property_id != "", "property_id of mut output must not be empty");
 
-  mut_output_symbols[property_id].push_back(mut_symbolt());
-  mut_symbolt &mut_info=mut_output_symbols[property_id].back();
+  mut_output_map[property_id][prefix].push_back(mut_iot());
+  mut_iot &mut_info=mut_output_map[property_id][prefix].back();
 
   mut_info.guard = guard;
   mut_info.source = source;
