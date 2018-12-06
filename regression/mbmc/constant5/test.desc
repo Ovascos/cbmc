@@ -4,6 +4,6 @@ main.c
 ^EXIT=10$
 ^SIGNAL=0$
 ^VERIFICATION SUCCESSFUL$
-^MUTATION NOT KILLED$
+^MUTANT KILLED$
 --
 ^warning: ignoring

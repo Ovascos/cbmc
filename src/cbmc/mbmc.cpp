@@ -131,12 +131,12 @@ int mbmct::do_mbmc(
 void mbmct::report_success()
 {
   checkert::report_success();
-  std::cout << "MUTATION KILLED" << std::endl;
+  std::cout << "MUTANT NOT KILLED" << std::endl;
 }
 
 void mbmct::report_failure()
 {
-  std::cout << "VERIFICATION FAILED OR MUTATION NOT KILLED" << std::endl;
+  std::cout << "MUTANT KILLED or VERIFICATION FAILED" << std::endl;
 }
 
 void mbmct::report_failure(const failed_propst &failed)
@@ -157,7 +157,7 @@ void mbmct::report_failure(const failed_propst &failed)
   else
     std::cout << "VERIFICATION SUCCESSFUL" << std::endl;
   if(mutation_failed)
-    std::cout << "MUTATION NOT KILLED" << std::endl;
+    std::cout << "MUTANT KILLED" << std::endl;
   else
-    std::cout << "MUTATION KILLED" << std::endl;
+    std::cout << "MUTANT NOT KILLED" << std::endl;
 }
