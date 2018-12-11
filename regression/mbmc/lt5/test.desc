@@ -1,0 +1,8 @@
+CORE mbmc
+main.c
+--mutator lt-2-leq --mutate 0
+^SIGNAL=0$
+^VERIFICATION SUCCESSFUL$
+^MUTANT KILLED$
+--
+^warning: ignoring

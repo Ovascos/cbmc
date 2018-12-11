@@ -105,6 +105,35 @@ struct mutation_eq_uneq : public mutationt
   }
 };
 
+struct mutation_lt_lte : public mutationt
+{
+  bool mutate_expr(exprt& ex) const override
+  {
+    INVARIANT(check_expr(ex), "invalid exprt passed");
+    if(ex.id() == ID_lt)
+      ex.id(ID_le);
+    else if(ex.id() == ID_gt)
+      ex.id(ID_ge);
+    else if(ex.id() == ID_le)
+      ex.id(ID_lt);
+    else if(ex.id() == ID_ge)
+      ex.id(ID_gt);
+    else
+      UNREACHABLE;
+    return true;
+  }
+
+  bool check_expr(const exprt& ex) const override
+  {
+    CHECK(has_n_op(ex, 2));
+    CHECK(ex.id() == ID_lt 
+         || ex.id() == ID_gt
+         || ex.id() == ID_ge 
+         || ex.id() == ID_le);
+    return true;
+  }
+};
+
 std::unique_ptr<mutationt> mutationt::factory(mutation_typet type)
 {
   switch(type)
@@ -119,6 +148,8 @@ std::unique_ptr<mutationt> mutationt::factory(mutation_typet type)
       return std::unique_ptr<mutationt>(new mutation_mul2_shift);
     case EQ_TO_UNEQ:
       return std::unique_ptr<mutationt>(new mutation_eq_uneq);
+    case LT_TO_LEQ:
+      return std::unique_ptr<mutationt>(new mutation_lt_lte);
     default:
       UNREACHABLE;
   }

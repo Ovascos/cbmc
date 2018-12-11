@@ -1,0 +1,7 @@
+CORE mbmc
+main.c
+--mutator lt-2-leq --list-locations
+^SIGNAL=0$
+^3:
+--
+^warning: ignoring

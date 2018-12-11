@@ -102,6 +102,11 @@ mutation_strategy_choosert::mutation_strategy_choosert()
        {" eq-2-uneq           changes equality (==) with unequality (!=)\n",
         []() { // NOLINT(whitespace/braces)
           return mutationt::factory(EQ_TO_UNEQ);
+        }}},
+      {"lt-2-leq",
+       {" lt-2-leq            changes <= to <, >= to > and vice versa\n",
+        []() { // NOLINT(whitespace/braces)
+          return mutationt::factory(LT_TO_LEQ);
         }}}
     })
 {
